@@ -4,6 +4,8 @@ var bodyParser = require('body-parser');
 
 var bcrypt = require('bcrypt');
 const saltRounds = 12;
+const usersalt = "$2b$12$Blj9eNPAVPi5J2wAXwFDp."    //For testing purposes only
+// const usersalt = bcrypt.genSaltSync(saltRounds); <-- Use this for an actual server
 
 //AWS set up. 
 const AWS = require('aws-sdk');
@@ -26,9 +28,12 @@ app.get('/sign_up', function(req, res){
 
 //Endpoint where login credentials are sent from login screen
 app.get('/verify', function(req ,res){
-    verifyPassword(req.query.username + ".json", req.query.pwd) .then(function(message){
-        console.log(message);
-        res.send(message);
+    encrypt(req.query.username + ".json", usersalt).then(function(hash){
+        username = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
+        verifyPassword(username, req.query.pwd) .then(function(message){
+            console.log(message);
+            res.send(message);
+        });
     }).catch(function(error){
         console.log("Error Verifying Login Credentials: ", error);
         res.status(500).send("There was an error retrieving your account information. Please try again.");
@@ -66,9 +71,12 @@ function verifyPassword(username, password){
 
 //Endpoint for account creation
 app.post('/create', function(req, res){
-    createAccount(req.body.username + ".json", req.body.pwd).then(function(message){
-        console.log(message);
-        res.send(message);
+    encrypt(req.body.username + ".json", usersalt).then(function(hash){
+        username = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
+        createAccount(username, req.body.pwd).then(function(message){
+            console.log(message);
+            res.send(message);
+        })
     }).catch(function(error){
         console.log("Error Creating Account: ", error);
         res.status(500).send("There was an error creating your account. Please try again.");
@@ -85,7 +93,8 @@ function createAccount(username, password){
                 resolve("That username is taken");
             }
             else{
-                encrypt(password).then(function(hash){
+                var pwdsalt = bcrypt.genSaltSync(saltRounds);
+                encrypt(password, pwdsalt).then(function(hash){
                     var params = {
                         Key: username,
                         ContentType: 'application/json',
@@ -100,7 +109,7 @@ function createAccount(username, password){
                             resolve("Successfully created account");
                         }
                     });
-                })
+                });
             }
         }).catch(function(error){
             reject(error);
@@ -130,19 +139,14 @@ function getAccountData(username){
     });
 }
 
-function encrypt(text){
+function encrypt(text, salt){
     console.log("Encrypting: ", text);
     return new Promise(function(resolve, reject){
-        bcrypt.genSalt(saltRounds, function(err, salt){
-            bcrypt.hash(text, salt, function(err, hash){
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(hash);
-                }
-            });
+        bcrypt.hash(text, salt, function(err, hash){
             if(err){
                 reject(err);
+            }else{
+                resolve(hash);
             }
         });
     });
