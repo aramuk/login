@@ -6,28 +6,28 @@
     <header></header>
     <body>
         <h1>Create an Account</h1>
-        <form id="createform" action="/create" method="post" style="font-family: monospace; font-size: 14px;">
+        <form id='create' action="/create" method="post">
             <label>Email:</label><br>
-            <input type="email" name="username" autocomplete="off" placeholder="johndoe@example.com" required><br>
-            <!-- <label>Password:</label><br>
-            <input type="password" name="pwd" autocomplete="off" placeholder="-----------" pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}" required><br>
+            <input type="email" name="username" autocomplete="off" required><br>
+            <label>Password:</label><br>
+            <input type="password" name="pwd" autocomplete="off" pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}" required><br>
             <label>Retype Password:</label><br>
-            <input type="password" name="conf_pwd" autocomplete="off" placeholder="-----------"  required><br>
-            <p>Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p> -->
+            <input type="password" name="conf_pwd" autocomplete="off" required><br>
+            <p>Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p>
+            <input type="submit" value="Create Account"><br> 
         </form>
-        <button id="submit">Create Account</button>
         <br><br>
         <script>
-            $('#createform').validate({
-                rules: {
-                    username: {
-                        required: true,
-                        email: true
-                    }
+            var password = document.getElementsByName('pwd')[0];
+            var confirm_password = document.getElementsByName('conf_pwd')[0];
+
+            $('[name=conf_pwd]').change(function(){
+                console.log(password.value, confirm_password.value)
+                if(password.value != confirm_password.value) {
+                    confirm_password.setCustomValidity("Passwords Don't Match");
+                } else {
+                    confirm_password.setCustomValidity('');
                 }
-            })
-            $('#submit').click(function(){
-                console.log($('#createform').valid());
             });
         </script>
         <a href="/">Login</a>
