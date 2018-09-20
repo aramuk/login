@@ -15,10 +15,15 @@ var s3bucket = new AWS.S3({params:{Bucket:'demo-account-db'}});
 
 var app = express();
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static(__dirname));
 
 //Go to home page (login)
 app.get('/', function(req, res){
     res.sendFile(path.join(__dirname + '/index.html'));
+});
+
+app.get('/login',function(req, res){
+    res.sendFile(path.join(__dirname + "/login.html"));
 });
 
 //Go to sign up page
