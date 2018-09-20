@@ -3,7 +3,12 @@
         <link rel="stylesheet" href="./css/index.css">
     </head>
     <body>
-        <h1>Login</h1> 
+        <div class="menu-bar">
+            <div id="site-title">
+                <a href="/">aramuk/login</a>
+            </div>
+        </div>
+        <h3>Sign in to your account</h3>
         <form action="/verify" method="get">
             <label>Username:</label>
             <input type="email" name="username" autocomplete="off" required><br>
@@ -12,6 +17,6 @@
             <input type="submit" value="Login">
         </form>
         <br><br>
-        <a href="/sign_up">Sign Up</a>
+        <a class="redirect" href="/sign_up">Don't have an account?</a>
     </body>
 </html>
