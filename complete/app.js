@@ -1,11 +1,11 @@
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 
 var bcrypt = require('bcrypt');
 const saltRounds = 12;
-const usersalt = "$2b$12$Blj9eNPAVPi5J2wAXwFDp."    //For testing purposes only
-// const usersalt = bcrypt.genSaltSync(saltRounds); <-- Use this for an actual server
+const usersalt = "$2b$12$Blj9eNPAVPi5J2wAXwFDp."
 
 //AWS set up. 
 const AWS = require('aws-sdk');
@@ -15,6 +15,7 @@ var s3bucket = new AWS.S3({params:{Bucket:'demo-account-db'}});
 
 var app = express();
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 app.use(express.static(__dirname));
 
 //Go to home page (login)
@@ -37,7 +38,13 @@ app.get('/verify', function(req ,res){
         username = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
         verifyPassword(username, req.query.pwd) .then(function(message){
             console.log(message);
-            res.send(message);
+            var options = {
+                httpOnly: true,
+                maxAge: 1000 * 60, //login every 20 min
+            }
+            res.cookie('login-result', '1', options);
+            console.log("Cookie created");
+            res.sendFile(path.join(__dirname + "/index.html"));
         });
     }).catch(function(error){
         console.log("Error Verifying Login Credentials: ", error);
