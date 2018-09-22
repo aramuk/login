@@ -15,11 +15,14 @@
         <h3>Create an Account</h3>
         <form id='create' action="/create" method="post">
             <label>Email:</label><br>
-            <input type="email" name="username" autocomplete="off" required><br>
+            <!-- <input type="email" name="username" autocomplete="off" required><br> -->
+            <input type="email" name="username"><br>
             <label>Password:</label><br>
-            <input type="password" name="pwd" autocomplete="off" pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}" required><br>
+            <input type="password" name="pwd"><br>
+            <!--<input type="password" name="pwd" autocomplete="off" pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}" required><br>-->
             <label>Retype Password:</label><br>
-            <input type="password" name="conf_pwd" autocomplete="off" required><br>
+            <input type="password" name="conf_pwd"><br>
+            <!-- <input type="password" name="conf_pwd" autocomplete="off" required><br> -->
             <p>Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p>
         </form>
         <button id="sign_up" class="redirect">Create Account</button>
@@ -36,11 +39,36 @@
                     confirm_password.setCustomValidity('');
                 }
             });
-            
             $('#sign_up').click(function(){
                 create = $('#create');
                 if(create.valid()){
                     create.submit();
+                }
+            });
+
+            // $('#create').validate({
+            //     rules: {
+            //         username: {
+            //             required: true
+            //         },
+            //         pwd: {
+            //             required: true
+            //         },
+            //         conf_pwd: {
+            //             required: true
+            //         },
+            //         messages: {
+            //             username: "This field is required"
+            //         }
+            //     }
+            // });
+
+            $('[name=pwd]').rules("add", {
+                required: true,
+                pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}",
+                messages: {
+                    required: "This field is required",
+                    pattern: "Your password does not meet strength rules"
                 }
             });
 
