@@ -3,6 +3,7 @@
         <link rel="stylesheet" href="./css/index.css">
         <script src="https://apis.google.com/js/platform.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>    
+        <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
     </head>
     <header></header>
     <body>
@@ -20,8 +21,9 @@
             <label>Retype Password:</label><br>
             <input type="password" name="conf_pwd" autocomplete="off" required><br>
             <p>Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p>
-            <input type="submit" value="Create Account"><br> 
         </form>
+        <button id="sign_up" class="redirect">Create Account</button>
+        <br><br>
         <script>
             var password = document.getElementsByName('pwd')[0];
             var confirm_password = document.getElementsByName('conf_pwd')[0];
@@ -34,6 +36,14 @@
                     confirm_password.setCustomValidity('');
                 }
             });
+            
+            $('#sign_up').click(function(){
+                create = $('#create');
+                if(create.valid()){
+                    create.submit();
+                }
+            });
+
         </script>
         <a class="redirect" href="/login">Already have an account?</a>
     </body>

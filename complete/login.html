@@ -1,6 +1,9 @@
 <html>
     <head>
         <link rel="stylesheet" href="./css/index.css">
+        <script src="https://apis.google.com/js/platform.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+        <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
     </head>
     <body>
         <div class="menu-bar">
@@ -9,14 +12,22 @@
             </a>
         </div>
         <h3>Sign in to your account</h3>
-        <form action="/verify" method="get">
+        <form id='login' action="/verify" method="get">
             <label>Username:</label>
             <input type="email" name="username" autocomplete="off" required><br>
             <label>Password:</label>
             <input type="password" name="pwd" autocomplete="off" required><br>
-            <input type="submit" value="Login">
         </form>
+        <button id='submit' class="redirect">Login</button>
         <br><br>
         <a class="redirect" href="/sign_up">Don't have an account?</a>
+        <script>
+            $('#submit').click(function(){
+                login = $('#login');
+                if(login.valid()){
+                    login.submit();
+                }
+            }); 
+        </script>
     </body>
 </html>
