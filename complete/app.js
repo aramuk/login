@@ -40,7 +40,7 @@ app.get('/verify', function(req ,res){
             console.log(message);
             var options = {
                 httpOnly: true,
-                maxAge: 1000 * 60, //login every 20 min
+                maxAge: 1000 * 60
             }
             res.cookie('login-result', '1', options);
             console.log("Cookie created");
@@ -58,8 +58,10 @@ function verifyPassword(username, password){
     return new Promise(function(resolve, reject){
         getAccountData(username).then(function(data){
             console.log("Data: ", data);
+            //only proceed to verification if the account already exists
             if(data != null){
                 var hashedpwd = data.pwd;
+                //use bcrypt to compare the stored password with the supplied one
                 bcrypt.compare(password, hashedpwd, function (err, res){
                     if(err){
                         reject(err);
@@ -104,6 +106,7 @@ function createAccount(username, password){
             if(data != null){
                 resolve("That username is taken");
             }
+            //only if account name is not taken, proceed with account creation.
             else{
                 var pwdsalt = bcrypt.genSaltSync(saltRounds);
                 encrypt(password, pwdsalt).then(function(hash){
@@ -129,6 +132,7 @@ function createAccount(username, password){
     });
 }
 
+//Get account data from the database if it exists, else return null
 function getAccountData(username){
     console.log("Checking account availability: ", username);
     return new Promise(function(resolve, reject){
@@ -151,6 +155,7 @@ function getAccountData(username){
     });
 }
 
+//bcrypt a string given a salt and return the value as a promise
 function encrypt(text, salt){
     console.log("Encrypting: ", text);
     return new Promise(function(resolve, reject){
