@@ -4,6 +4,7 @@
         <script src="https://apis.google.com/js/platform.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>    
         <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
     </head>
     <header></header>
     <body>
@@ -28,49 +29,55 @@
         <button id="sign_up" class="redirect">Create Account</button>
         <br><br>
         <script>
-            var password = document.getElementsByName('pwd')[0];
-            var confirm_password = document.getElementsByName('conf_pwd')[0];
+            // var password = document.getElementsByName('pwd')[0];
+            // var confirm_password = document.getElementsByName('conf_pwd')[0];
 
-            $('[name=conf_pwd]').change(function(){
-                console.log(password.value, confirm_password.value)
-                if(password.value != confirm_password.value) {
-                    confirm_password.setCustomValidity("Passwords Don't Match");
-                } else {
-                    confirm_password.setCustomValidity('');
-                }
-            });
+            // $('[name=conf_pwd]').change(function(){
+            //     console.log(password.value, confirm_password.value)
+            //     if(password.value != confirm_password.value) {
+            //         confirm_password.setCustomValidity("Passwords Don't Match");
+            //     } else {
+            //         confirm_password.setCustomValidity('');
+            //     }
+            // });
             $('#sign_up').click(function(){
                 create = $('#create');
                 if(create.valid()){
                     create.submit();
                 }
             });
-
-            // $('#create').validate({
-            //     rules: {
-            //         username: {
-            //             required: true
-            //         },
-            //         pwd: {
-            //             required: true
-            //         },
-            //         conf_pwd: {
-            //             required: true
-            //         },
-            //         messages: {
-            //             username: "This field is required"
-            //         }
-            //     }
-            // });
-
-            $('[name=pwd]').rules("add", {
-                required: true,
-                pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}",
-                messages: {
-                    required: "This field is required",
-                    pattern: "Your password does not meet strength rules"
+        
+            $('#create').validate({
+                rules: {
+                    username: {
+                        required: true
+                    },
+                    pwd: {
+                        required: true,
+                        pattern: /(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}/,
+                    },
+                    conf_pwd: {
+                        required: true
+                    },
+                    messages: {
+                        username: "This field is required",
+                        pwd: {
+                                required: "This field is required",
+                                pattern: "Please follow password strength rules"
+                        },
+                        conf_pwd: "This field is required",
+                    }
                 }
             });
+
+            // $('[name=pwd]').rules("add", {
+            //     required: true,
+            //     pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}",
+            //     messages: {
+            //         required: "This field is required",
+            //         pattern: "Your password does not meet strength rules"
+            //     }
+            // });
 
         </script>
         <a class="redirect" href="/login">Already have an account?</a>
