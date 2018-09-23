@@ -33,7 +33,8 @@ app.get('/sign_up', function(req, res){
 });
 
 app.get('/checkAvailability', function(req, res){
-    encrypt(req.query.username, usersalt).then(function(hash){
+    encrypt(req.query.username + '.json', usersalt).then(function(hash){
+        hash = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
         getAccountData(hash).then(function(data){
             if(data != null){
                 res.send("Sorry that account is taken");
@@ -46,7 +47,6 @@ app.get('/checkAvailability', function(req, res){
         console.log("Error: ", err);
         res.status(500).send("There was an error with our server, please try again later");
     });
-    
 });
 
 
