@@ -14,7 +14,7 @@
         <h3>Sign in to your account</h3>
         <form id='login' action="/verify" method="get">
             <label>Username:</label>
-            <input type="email" name="username" autocomplete="off" required><br>
+            <input name="username" autocomplete="off" required><br>
             <label>Password:</label>
             <input type="password" name="pwd" autocomplete="off" required><br>
         </form>
@@ -28,6 +28,15 @@
                     login.submit();
                 }
             }); 
+
+            $('#submit').validate({
+                rules: {
+                    username: {
+                        required: true,
+                        email: true
+                    }
+                }
+            })
         </script>
     </body>
 </html>
