@@ -17,9 +17,9 @@
         <form id='create' action="/create" method="post">
             <label>Email:</label><br>
             <!-- <input type="email" name="username" autocomplete="off" required><br> -->
-            <input type="email" name="username"><br>
+            <input name="username"><br>
             <label>Password:</label><br>
-            <input type="password" name="pwd"><br>
+            <input type="password" id="pwd" name="pwd"><br>
             <!--<input type="password" name="pwd" autocomplete="off" pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}" required><br>-->
             <label>Retype Password:</label><br>
             <input type="password" name="conf_pwd"><br>
@@ -40,45 +40,45 @@
             //         confirm_password.setCustomValidity('');
             //     }
             // });
+            create = $('#create');
+
             $('#sign_up').click(function(){
-                create = $('#create');
+                
                 if(create.valid()){
                     create.submit();
                 }
             });
         
-            $('#create').validate({
+            create.validate({
                 rules: {
                     username: {
-                        required: true
+                        required: true,
+                        email: true
                     },
                     pwd: {
                         required: true,
                         pattern: /(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}/,
                     },
                     conf_pwd: {
-                        required: true
-                    },
-                    messages: {
-                        username: "This field is required",
-                        pwd: {
-                                required: "This field is required",
-                                pattern: "Please follow password strength rules"
-                        },
-                        conf_pwd: "This field is required",
+                        required: true,
+                        equalTo: pwd
                     }
-                }
+                },
+                messages: {
+                    username: {
+                        required: "Your email is needed to contact you",
+                        email: "Please enter a valid email"
+                    },
+                    pwd: {
+                            required: "You need a password to securely access your account",
+                            pattern: "Please follow password strength rules"
+                    },
+                    conf_pwd: {
+                        required: "You need to confirm your password",
+                        equalTo: "Your passwords must match"
+                    }
+                } 
             });
-
-            // $('[name=pwd]').rules("add", {
-            //     required: true,
-            //     pattern: "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}",
-            //     messages: {
-            //         required: "This field is required",
-            //         pattern: "Your password does not meet strength rules"
-            //     }
-            // });
-
         </script>
         <a class="redirect" href="/login">Already have an account?</a>
     </body>
