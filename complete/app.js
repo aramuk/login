@@ -32,6 +32,24 @@ app.get('/sign_up', function(req, res){
     res.sendFile(path.join(__dirname + '/public/create_account.html'))
 });
 
+app.get('/checkAvailability', function(req, res){
+    encrypt(req.query.username, usersalt).then(function(hash){
+        getAccountData(hash).then(function(data){
+            if(data != null){
+                res.send("Sorry that account is taken");
+            }
+            else{
+                res.send("It looks like that username is available. Would you like to take it?");
+            }
+        })
+    }).catch(function(err){
+        console.log("Error: ", err);
+        res.status(500).send("There was an error with our server, please try again later");
+    });
+    
+});
+
+
 //Endpoint where login credentials are sent from login screen
 app.get('/verify', function(req ,res){
     encrypt(req.query.username + ".json", usersalt).then(function(hash){
@@ -168,7 +186,6 @@ function encrypt(text, salt){
         });
     });
 }
-
 
 app.listen(process.env.PORT||8000, function(){
     console.log('Listening on port 8000'); 
