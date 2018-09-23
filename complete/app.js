@@ -16,20 +16,20 @@ var s3bucket = new AWS.S3({params:{Bucket:'demo-account-db'}});
 var app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname + '/public'));
 
 //Go to home page (login)
 app.get('/', function(req, res){
-    res.sendFile(path.join(__dirname + '/index.html'));
+    res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
 app.get('/login',function(req, res){
-    res.sendFile(path.join(__dirname + "/login.html"));
+    res.sendFile(path.join(__dirname + "/public/login.html"));
 });
 
 //Go to sign up page
 app.get('/sign_up', function(req, res){
-    res.sendFile(path.join(__dirname + '/create_account.html'))
+    res.sendFile(path.join(__dirname + '/public/create_account.html'))
 });
 
 //Endpoint where login credentials are sent from login screen
@@ -44,7 +44,7 @@ app.get('/verify', function(req ,res){
             }
             res.cookie('login-result', '1', options);
             console.log("Cookie created");
-            res.sendFile(path.join(__dirname + "/index.html"));
+            res.sendFile(path.join(__dirname + "/public/index.html"));
         });
     }).catch(function(error){
         console.log("Error Verifying Login Credentials: ", error);
