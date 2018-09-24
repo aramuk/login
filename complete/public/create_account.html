@@ -13,33 +13,22 @@
                 <div id="site-title">aramuk/login</div>
             </a>
         </div>
-        <h3>Create an Account</h3>
-        <form id='create' action="/create" method="post">
-            <label>Email:</label><br>
-            <!-- <input type="email" name="username" autocomplete="off" required><br> -->
-            <input name="username"><br>
-            <label>Password:</label><br>
-            <input type="password" id="pwd" name="pwd"><br>
-            <!--<input type="password" name="pwd" autocomplete="off" pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}" required><br>-->
-            <label>Retype Password:</label><br>
-            <input type="password" name="conf_pwd"><br>
-            <!-- <input type="password" name="conf_pwd" autocomplete="off" required><br> -->
-            <p>Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p>
-        </form>
-        <button id="sign_up" class="redirect">Create Account</button>
-        <br><br>
+        <div class="form">
+            <h3>Create an Account</h3>
+            <form id='create' action="/create" method="post">
+                <label>Email:</label><br>
+                <input name="username"><br>
+                <label>Password:</label><br>
+                <input type="password" id="pwd" name="pwd"><br>
+                <label>Retype Password:</label><br>
+                <input type="password" name="conf_pwd"><br>
+                <p>Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p>
+            </form>
+            <button id="sign_up" class="redirect">Create Account</button>
+            <br><br>
+            <a class="redirect" href="/login">Already have an account?</a>
+        </div>
         <script>
-            // var password = document.getElementsByName('pwd')[0];
-            // var confirm_password = document.getElementsByName('conf_pwd')[0];
-
-            // $('[name=conf_pwd]').change(function(){
-            //     console.log(password.value, confirm_password.value)
-            //     if(password.value != confirm_password.value) {
-            //         confirm_password.setCustomValidity("Passwords Don't Match");
-            //     } else {
-            //         confirm_password.setCustomValidity('');
-            //     }
-            // });
             create = $('#create');
 
             $('#sign_up').click(function(){
@@ -80,6 +69,5 @@
                 } 
             });
         </script>
-        <a class="redirect" href="/login">Already have an account?</a>
     </body>
 </html>
