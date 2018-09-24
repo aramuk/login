@@ -9,6 +9,17 @@ body{
 a{
     text-decoration: none;
     color: inherit;
+    font-size: 12px;
+}
+button{
+    font-size: 14px;
+}
+input{
+    width: 100%;
+    border: 1px solid brown;
+    border-radius: 10px;
+    line-height: 24px;
+    font-size: 16px;
 }
 
 .menu-bar{
@@ -46,7 +57,6 @@ a{
     background-color: brown;
     cursor: pointer;
     border-radius: 10px;
-    font-size: 12px;
     padding: 10px;
 }
 .redirect:hover{
