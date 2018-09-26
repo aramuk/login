@@ -23,7 +23,7 @@ app.get('/', function(req, res){
     var cookies = req.cookies.aramuk_login_credentials;
 
     //if the user's is still in session, load their data
-    if(cookies!=null){
+    if(cookies != null){
         console.log("Welcome Home: ", cookies.username);
     }
     //else load default landing page
@@ -40,11 +40,17 @@ app.get('/css/index.css', function(req, res){
 
 //Go to login page
 app.get('/login',function(req, res){
+    if(req.cookies.aramuk_login_credentials != null){
+        console.log("Login as a new account?");
+    }
     res.sendFile(path.join(__dirname + "/public/login.html"));
 });
 
 //Go to sign up page
 app.get('/sign_up', function(req, res){
+    if(req.cookies.aramuk_login_credentials != null){
+        console.log("Create a new account?");
+    }
     res.sendFile(path.join(__dirname + '/public/create_account.html'))
 });
 
