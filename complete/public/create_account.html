@@ -16,13 +16,16 @@
         <div class="form">
             <h3>Create an Account</h3>
             <form id='create' action="/create" method="post">
-                <label>Email:</label><br>
-                <input name="username"><br>
-                <label>Password:</label><br>
-                <input type="password" id="pwd" name="pwd"><br>
-                <label>Retype Password:</label><br>
-                <input type="password" name="conf_pwd"><br>
-                <p>Password must be at least 8 characters long with 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p>
+                <label for="id">Email:</label>
+                <input id="name" name="username">
+                <div class="error-msg"></div>
+                <p>Password must contain at least 8 characters including: 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p>
+                <label for="pwd">Password:</label>
+                <input id="pwd"  name="pwd" type="password">
+                <div class="error-msg"></div>
+                <label for="conf_pwd">Retype Password:</label>
+                <input id="conf_pwd" name="conf_pwd" type="password">
+                <div class="error-msg"></div>
             </form>
             <button id="sign_up" class="redirect">Create Account</button>
             <br><br>
@@ -32,7 +35,6 @@
             create = $('#create');
 
             $('#sign_up').click(function(){
-                
                 if(create.valid()){
                     create.submit();
                 }
@@ -66,6 +68,9 @@
                         required: "You need to confirm your password",
                         equalTo: "Your passwords must match"
                     }
+                },
+                errorPlacement: function(error, element){
+                    $(element).next().append(error);
                 } 
             });
         </script>

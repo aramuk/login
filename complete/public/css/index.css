@@ -20,8 +20,15 @@ input{
     border-radius: 10px;
     line-height: 24px;
     font-size: 16px;
+    padding: 5px;
 }
-
+label{
+    padding: 5px;
+}
+h3{
+    margin: 0px;
+    padding-bottom: 10px;
+}
 .menu-bar{
     width: 100%;
     background-color: brown;
@@ -74,4 +81,9 @@ input{
     min-height: 200px;
     border: 1px solid brown;
     border-radius: 20px;
+}
+
+.error-msg{
+    height: 20px;
+    color: red;
 }

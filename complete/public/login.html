@@ -11,32 +11,44 @@
                 <div id="site-title">aramuk/login</div>
             </a>
         </div>
-        <h3>Sign in to your account</h3>
-        <form id='login' action="/verify" method="get">
-            <label>Username:</label>
-            <input name="username" autocomplete="off" required><br>
-            <label>Password:</label>
-            <input type="password" name="pwd" autocomplete="off" required><br>
-        </form>
-        <button id='submit' class="redirect">Login</button>
-        <br><br>
-        <a class="redirect" href="/sign_up">Don't have an account?</a>
+        <div class="form">
+            <h3>Sign in to your account</h3>
+            <form id='login' action="/verify" method="get">
+                <label for="name">Username:</label>
+                <input id="name" name="username" autocomplete="off">
+                <div class="error-msg"></div>
+                <label for="pwd">Password:</label>
+                <input id="pwd" name="pwd" type="password" autocomplete="off">
+                <div class="error-msg"></div>
+            </form>
+            <button id='submit' class="redirect">Login</button>
+            <br><br>
+            <a class="redirect" href="/sign_up">Don't have an account?</a>
+        </div>
+        
         <script>
+            var login = $('#login');
+
             $('#submit').click(function(){
-                login = $('#login');
                 if(login.valid()){
                     login.submit();
                 }
             }); 
 
-            $('#submit').validate({
+            login.validate({
                 rules: {
                     username: {
                         required: true,
                         email: true
+                    },
+                    pwd: {
+                        required: true
                     }
+                },
+                errorPlacement: function(error, element){
+                    $(element).next().append(error);
                 }
-            })
+            });
         </script>
     </body>
 </html>
