@@ -19,7 +19,13 @@ app.use(cookieParser());
 
 //Go to home page
 app.get('/', function(req, res){
-    console.log("Cookies:", req.cookies)
+    var cookies = req.cookies.aramuk_login_credentials;
+    if(cookies!=null){
+        console.log("Welcome Home", cookies.username, cookies.password);
+    }
+    else{
+        console.log("Welcome New User!");
+    }
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
@@ -60,13 +66,14 @@ app.get('/checkAvailability', function(req, res){
 app.get('/verify', function(req ,res){
     encrypt(req.query.username + ".json", usersalt).then(function(hash){
         username = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
-        verifyPassword(username, req.query.pwd) .then(function(message){
+        verifyPassword(username, req.query.pwd).then(function(message){
             console.log(message);
             var options = {
                 httpOnly: true,
-                maxAge: 1000 * 60
+                maxAge: 1000 * 60 * 1 //login key lasts for 1 min; increase for actual use
             }
-            res.cookie('login-result', '1', options);
+            var credentials = {username: req.query.username, password: req.query.pwd};
+            res.cookie('aramuk_login_credentials', credentials, options);
             console.log("Cookie created");
             res.redirect('/');
         });
