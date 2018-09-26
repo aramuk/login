@@ -16,13 +16,19 @@ var s3bucket = new AWS.S3({params:{Bucket:'demo-account-db'}});
 var app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
-app.use(express.static(__dirname + '/public'));
 
-//Go to home page (login)
+//Go to home page
 app.get('/', function(req, res){
+    console.log("Cookies:", req.cookies)
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
+//Return stylesheets to front-end
+app.get('/css/index.css', function(req, res){
+    res.sendFile(path.join(__dirname + '/public/css/index.css'));
+});
+
+//Go to login page
 app.get('/login',function(req, res){
     res.sendFile(path.join(__dirname + "/public/login.html"));
 });
@@ -62,7 +68,7 @@ app.get('/verify', function(req ,res){
             }
             res.cookie('login-result', '1', options);
             console.log("Cookie created");
-            res.sendFile(path.join(__dirname + "/public/index.html"));
+            res.redirect('/');
         });
     }).catch(function(error){
         console.log("Error Verifying Login Credentials: ", error);
