@@ -19,10 +19,14 @@ app.use(cookieParser());
 
 //Go to home page
 app.get('/', function(req, res){
+    //get any saved login credentials
     var cookies = req.cookies.aramuk_login_credentials;
+
+    //if the user's is still in session, load their data
     if(cookies!=null){
-        console.log("Welcome Home", cookies.username, cookies.password);
+        console.log("Welcome Home: ", cookies.username);
     }
+    //else load default landing page
     else{
         console.log("Welcome New User!");
     }
@@ -44,6 +48,7 @@ app.get('/sign_up', function(req, res){
     res.sendFile(path.join(__dirname + '/public/create_account.html'))
 });
 
+//Check account availability before account creation
 app.get('/checkAvailability', function(req, res){
     encrypt(req.query.username + '.json', usersalt).then(function(hash){
         hash = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
@@ -200,6 +205,7 @@ function encrypt(text, salt){
     });
 }
 
+//Run server @ IP if not running on localhost, else at port 8000
 app.listen(process.env.PORT||8000, function(){
     console.log('Listening on port 8000'); 
 });
