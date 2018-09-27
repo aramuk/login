@@ -15,10 +15,12 @@
         </div>
         <div class="form">
             <h3>Create an Account</h3>
-            <form id='create' action="/create" method="post">
+            <form id='check' action="/checkAvailability" method="get">
                 <label for="id">Email:</label>
                 <input id="name" name="username">
                 <div class="error-msg"></div>
+            </form>
+            <form id='create' action="/create" method="post">
                 <p>Password must contain at least 8 characters including: 1 uppercase letter, 1 lowercase letter, 1 number, 1 character</p>
                 <label for="pwd">Password:</label>
                 <input id="pwd"  name="pwd" type="password">
@@ -27,12 +29,40 @@
                 <input id="conf_pwd" name="conf_pwd" type="password">
                 <div class="error-msg"></div>
             </form>
-            <button id="sign_up" class="redirect">Create Account</button>
+            <button id="check_availability" class="redirect">Check Account Availability</button>
+            <!-- <button id="sign_up" class="redirect">Create Account</button> -->
             <br><br>
             <a class="redirect" href="/login">Already have an account?</a>
         </div>
         <script>
+            check = $('#check');
             create = $('#create');
+            create.css({'display':'none'})
+
+            $('#check_availability').click(function(){
+                if(check.valid()){
+                    check.submit();
+                }
+            });
+
+            check.validate({
+                rules: {
+                    username: {
+                        required: true,
+                        email: true
+                    }
+                },
+                messages: {
+                    username: {
+                        required: "Your email is needed to contact you",
+                        email: "Please enter a valid email"
+                    }
+                },
+                errorPlacement: function(error, element){
+                    $(element).next().append(error);
+                } 
+            });
+
 
             $('#sign_up').click(function(){
                 if(create.valid()){
@@ -42,10 +72,6 @@
         
             create.validate({
                 rules: {
-                    username: {
-                        required: true,
-                        email: true
-                    },
                     pwd: {
                         required: true,
                         pattern: /(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%\^&*)(+=._-]).{8,}/,
@@ -56,10 +82,6 @@
                     }
                 },
                 messages: {
-                    username: {
-                        required: "Your email is needed to contact you",
-                        email: "Please enter a valid email"
-                    },
                     pwd: {
                             required: "You need a password to securely access your account",
                             pattern: "Please follow password strength rules"
