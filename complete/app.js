@@ -60,10 +60,10 @@ app.get('/checkAvailability', function(req, res){
         hash = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
         getAccountData(hash).then(function(data){
             if(data != null){
-                res.send("Sorry that account is taken");
+                res.json({available : false});
             }
             else{
-                res.send("It looks like that username is available. Would you like to take it?");
+                res.json({available : true});
             }
         })
     }).catch(function(err){
