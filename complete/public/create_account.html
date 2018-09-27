@@ -30,7 +30,7 @@
                 <div class="error-msg"></div>
             </form>
             <button id="check_availability" class="redirect">Check Account Availability</button>
-            <!-- <button id="sign_up" class="redirect">Create Account</button> -->
+            <button id="sign_up" class="redirect">Create Account</button>
             <br><br>
             <a class="redirect" href="/login">Already have an account?</a>
         </div>
@@ -38,6 +38,7 @@
             check = $('#check');
             create = $('#create');
             create.css({'display':'none'})
+            $('#sign_up').css({'display':'none'});
 
             $('#check_availability').click(function(){
                 if(check.valid()){
@@ -46,7 +47,12 @@
                             alert("That account is taken. Please try a different email.");
                         }
                         else{
-                            alert("That account is available. Would you like to use it?");
+                            alert("That account is available. Would you like to use it?");//this is rhetorical
+                            $('#name').prop('readonly', true);
+                            $('#name').css({'background-color':'lightgrey'});
+                            create.css({'display':'inherit'});
+                            $('#sign_up').css({'display':'inherit'});
+                            $('#check_availability').css({'display':'inherit'});
                         }
                     });
                 }
