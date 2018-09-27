@@ -15,7 +15,7 @@
         </div>
         <div class="form">
             <h3>Create an Account</h3>
-            <form id='check' action="/checkAvailability" method="get">
+            <form id='check'>
                 <label for="id">Email:</label>
                 <input id="name" name="username">
                 <div class="error-msg"></div>
@@ -41,7 +41,14 @@
 
             $('#check_availability').click(function(){
                 if(check.valid()){
-                    check.submit();
+                    $.get('/checkAvailability', check.serialize(), function(data){
+                        if(!data.available){
+                            alert("That account is taken. Please try a different email.");
+                        }
+                        else{
+                            alert("That account is available. Would you like to use it?");
+                        }
+                    });
                 }
             });
 
