@@ -24,11 +24,11 @@ app.get('/', function(req, res){
 
     //if the user's is still in session, load their data
     if(cookies != null){
-        console.log("Welcome Home: ", cookies.username);
+        console.log("Welcome Home: ", cookies.username);//placeholder
     }
     //else load default landing page
     else{
-        console.log("Welcome New User!");
+        console.log("Welcome New User!");//placeholder
     }
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
@@ -77,16 +77,17 @@ app.get('/checkAvailability', function(req, res){
 app.get('/verify', function(req ,res){
     encrypt(req.query.username + ".json", usersalt).then(function(hash){
         username = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
-        verifyPassword(username, req.query.pwd).then(function(message){
-            console.log(message);
-            var options = {
-                httpOnly: true,
-                maxAge: 1000 * 60 * 1 //login key lasts for 1 min; increase for actual use
+        verifyPassword(username, req.query.pwd).then(function(success){
+            if(success){
+                var options = {
+                    httpOnly: true,
+                    maxAge: 1000 * 60 * 1 //login key lasts for 1 min; increase for actual use
+                }
+                var credentials = {username: req.query.username, password: req.query.pwd};
+                res.cookie('aramuk_login_credentials', credentials, options);
+                console.log("Cookie created");
             }
-            var credentials = {username: req.query.username, password: req.query.pwd};
-            res.cookie('aramuk_login_credentials', credentials, options);
-            console.log("Cookie created");
-            res.redirect('/');
+            res.json({verified: success});
         });
     }).catch(function(error){
         console.log("Error Verifying Login Credentials: ", error);
@@ -108,11 +109,8 @@ function verifyPassword(username, password){
                     if(err){
                         reject(err);
                     }
-                    if(res){
-                        resolve("Success");
-                    }
                     else{
-                        resolve("Invalid Username + Password Combination");
+                        resolve(res);
                     }
                 });
             }
