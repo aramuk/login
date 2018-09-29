@@ -40,10 +40,14 @@ app.get('/css/index.css', function(req, res){
 
 //Go to login page
 app.get('/login',function(req, res){
-    if(req.cookies.aramuk_login_credentials != null){
-        console.log("Login as a new account?");
+    if(req.cookies.aramuk_login_credentials == null){
+        res.sendFile(path.join(__dirname + "/public/login.html"));
     }
-    res.sendFile(path.join(__dirname + "/public/login.html"));
+    else{
+
+        //I suppose the login button needs to disappear at some point but this should disable it for now
+        res.send("Logout first before you login");
+    }
 });
 
 //Go to sign up page
@@ -83,7 +87,7 @@ app.get('/verify', function(req ,res){
                     httpOnly: true,
                     maxAge: 1000 * 60 * 1 //login key lasts for 1 min; increase for actual use
                 }
-                var credentials = {username: req.query.username, password: req.query.pwd};
+                var credentials = {username: username};
                 res.cookie('aramuk_login_credentials', credentials, options);
                 console.log("Cookie created");
             }
