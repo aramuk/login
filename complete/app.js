@@ -39,15 +39,19 @@ app.get('/css/index.css', function(req, res){
 });
 
 //Go to login page
-app.get('/login',function(req, res){
+app.get('/login', function(req, res){
     if(req.cookies.aramuk_login_credentials == null){
         res.sendFile(path.join(__dirname + "/public/login.html"));
     }
     else{
-
         //I suppose the login button needs to disappear at some point but this should disable it for now
         res.send("Logout first before you login");
     }
+});
+
+app.get('/logout', function(req, res){
+    res.clearCookie('aramuk_login_credentials');
+    res.redirect('/')
 });
 
 //Go to sign up page
