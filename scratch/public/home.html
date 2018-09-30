@@ -17,7 +17,13 @@
             </a>
         </div>
         <div class='form'>
-            <h3>Welcome Back!</h3>
         </form>
+        <script>
+            $(window).on('load', function(){
+                $.get('/loadData', function(data){
+                    $('.form').append('<h3>Welcome Back ' + data.fname + '!!</h3');
+                });
+            });
+        </script>
     </body>
 </html>
