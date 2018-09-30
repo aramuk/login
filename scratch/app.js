@@ -25,12 +25,13 @@ app.get('/', function(req, res){
     //if the user's is still in session, load their data
     if(cookies != null){
         console.log("Welcome Home: ", cookies.username);//placeholder
+        res.sendFile(path.join(__dirname + '/public/home.html'));
     }
     //else load default landing page
     else{
         console.log("Welcome New User!");//placeholder
+        res.sendFile(path.join(__dirname + '/public/index.html'));
     }
-    res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
 //Return stylesheets to front-end
