@@ -74,7 +74,7 @@ app.get('/checkAvailability', function(req, res){
             else{
                 res.json({available : true});
             }
-        })
+        });
     }).catch(function(err){
         console.log("Error: ", err);
         res.status(500).send("There was an error with our server, please try again later");
@@ -100,9 +100,26 @@ app.get('/verify', function(req ,res){
         });
     }).catch(function(error){
         console.log("Error Verifying Login Credentials: ", error);
-        res.status(500).send("There was an error retrieving your account information. Please try again.");
+        res.status(500).send("There was an error logging in. Please try again.");
     });   
 });
+
+app.get('/loadData', function(req, res){
+    if(req.cookies.aramuk_login_credentials != null){
+        console.log(req.cookies.aramuk_login_credentials.username);
+        getAccountData(req.cookies.aramuk_login_credentials.username).then(function(json){
+            console.log(json.data);
+            res.json(json.data);
+        }).catch(function(error){
+            console.log("Error: ", error);
+            res.status(500).send("There was an error retrieving your account information. Please try again.");
+        });
+    }
+    else{
+        res.send('Please login first');
+    }
+});
+
 
 //Checks to see if account + password combination is valid and returns appropriate response
 function verifyPassword(username, password){
