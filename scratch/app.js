@@ -24,12 +24,12 @@ app.get('/', function(req, res){
 
     //if the user's is still in session, load their data
     if(cookies != null){
-        console.log("Welcome Home: ", cookies.username);//placeholder
+        console.log("Welcome Home: ", cookies.username);
         res.sendFile(path.join(__dirname + '/public/home.html'));
     }
     //else load default landing page
     else{
-        console.log("Welcome New User!");//placeholder
+        console.log("Welcome New User!");
         res.sendFile(path.join(__dirname + '/public/index.html'));
     }
 });
@@ -50,9 +50,10 @@ app.get('/login', function(req, res){
     }
 });
 
+//Logout by clearing any existing login credentials
 app.get('/logout', function(req, res){
     res.clearCookie('aramuk_login_credentials');
-    res.redirect('/')
+    res.redirect('/');
 });
 
 //Go to sign up page
@@ -60,7 +61,7 @@ app.get('/sign_up', function(req, res){
     if(req.cookies.aramuk_login_credentials != null){
         console.log("Create a new account?");
     }
-    res.sendFile(path.join(__dirname + '/public/create_account.html'))
+    res.sendFile(path.join(__dirname + '/public/create_account.html'));
 });
 
 //Check account availability before account creation
@@ -85,14 +86,14 @@ app.get('/checkAvailability', function(req, res){
 //Endpoint where login credentials are sent from login screen
 app.get('/verify', function(req ,res){
     encrypt(req.query.username + ".json", usersalt).then(function(hash){
-        username = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
-        verifyPassword(username, req.query.pwd).then(function(success){
+        var hashedUName = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
+        verifyPassword(hashedUName, req.query.pwd).then(function(success){
             if(success){
                 var options = {
                     httpOnly: true,
                     maxAge: 1000 * 60 * 1 //login key lasts for 1 min; increase for actual use
                 }
-                var credentials = {username: username};
+                var credentials = {username: hashedUName};
                 res.cookie('aramuk_login_credentials', credentials, options);
                 console.log("Cookie created");
             }
@@ -104,22 +105,37 @@ app.get('/verify', function(req ,res){
     });   
 });
 
+//Endpoint for account creation
+app.post('/create', function(req, res){
+    encrypt(req.body.username + ".json", usersalt).then(function(hash){
+        var hashedUName = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
+        createAccount(req.body.username, hashedUName, req.body.pwd).then(function(message){
+            console.log(message);
+            var httpUName = req.body.username.split('@')
+            res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
+        })
+    }).catch(function(error){
+        console.log("Error Creating Account: ", error);
+        res.status(500).send("There was an error creating your account. Please try again.");
+    });
+});
+
+//Get user data except for username and password and return to front-end
 app.get('/loadData', function(req, res){
-    if(req.cookies.aramuk_login_credentials != null){
-        console.log(req.cookies.aramuk_login_credentials.username);
-        getAccountData(req.cookies.aramuk_login_credentials.username).then(function(json){
-            console.log(json.data);
+    var cookies = req.cookies.aramuk_login_credentials
+    if(cookies != null){
+        console.log(cookies.username);
+        getAccountData(cookies.username).then(function(json){
             res.json(json.data);
         }).catch(function(error){
-            console.log("Error: ", error);
+            console.log("Error Getting Account Data: ", error);
             res.status(500).send("There was an error retrieving your account information. Please try again.");
         });
     }
     else{
-        res.send('Please login first');
+        res.redirect('/login');
     }
 });
-
 
 //Checks to see if account + password combination is valid and returns appropriate response
 function verifyPassword(username, password){
@@ -149,26 +165,11 @@ function verifyPassword(username, password){
     });
 }
 
-//Endpoint for account creation
-app.post('/create', function(req, res){
-    encrypt(req.body.username + ".json", usersalt).then(function(hash){
-        username = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
-        createAccount(req.body.username, username, req.body.pwd).then(function(message){
-            console.log(message);
-            var httpUName = req.body.username.split('@')
-            res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
-        })
-    }).catch(function(error){
-        console.log("Error Creating Account: ", error);
-        res.status(500).send("There was an error creating your account. Please try again.");
-    });
-});
-
 //Creates an account, if the username is not already taken.
-function createAccount(username, hashedName, password){
-    console.log("Starting Account Creation", username, password);
+function createAccount(uName, hashedUName, password){
+    console.log("Starting Account Creation", uName, password);
     return new Promise(function(resolve, reject){
-        getAccountData(hashedName).then(function(data){
+        getAccountData(hashedUName).then(function(data){
             console.log("Data: ", data);
             if(data != null){
                 resolve("That username is taken");
@@ -178,17 +179,17 @@ function createAccount(username, hashedName, password){
                 var pwdsalt = bcrypt.genSaltSync(saltRounds);
                 encrypt(password, pwdsalt).then(function(hash){
                     var params = {
-                        Key: hashedName,
+                        Key: hashedUName,
                         ContentType: 'application/json',
                         Body: JSON.stringify({
-                            username: username,
+                            username: uName,
                             pwd: hash,
-                            data: getDummyData()
+                            data: getDummyData()//Generate fake user data for now
                         })
                     }
                     console.log("Creating Account", params);
                     s3bucket.upload(params, function(err){
-                        if(err) {
+                        if(err){
                             reject(err);
                         }
                         else{
@@ -204,11 +205,11 @@ function createAccount(username, hashedName, password){
 }
 
 //Get account data from the database if it exists, else return null
-function getAccountData(username){
-    console.log("Checking account availability: ", username);
+function getAccountData(uName){
+    console.log("Searching for account: ", uName);
     return new Promise(function(resolve, reject){
         var params = {
-            Key: username
+            Key: uName
         }
         s3bucket.getObject(params, function(err, data){
             if(err && err.code == 'NoSuchKey'){

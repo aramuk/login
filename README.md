@@ -16,5 +16,5 @@ Front-End
 ## Further Details
 The server is built using an `express.js` framework, which connects to an AWS S3 database, where all user data is stored. `bcrypt` is used as the salting and hashing algorithm. The front-end is built ground up using HTML, CSS, and javascript (including JQuery and JQuery Validation libraries). 
 
-##Disclaimer
+## Disclaimer
 Dummy user data was randomly generated. If there is any resemblance to a real life person, it was not intentional. Message me and I will take it down. 
