@@ -79,6 +79,10 @@
 
             $('#sign_up').click(function(){
                 if(create.valid()){
+                    var username = $('#name').clone();
+                    username.prop('type', 'hidden'); 
+                    username.prop('readonly', false);
+                    $(username).appendTo(create);
                     create.submit();
                 }
             });
