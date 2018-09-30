@@ -136,9 +136,10 @@ function verifyPassword(username, password){
 app.post('/create', function(req, res){
     encrypt(req.body.username + ".json", usersalt).then(function(hash){
         username = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
-        createAccount(username, req.body.pwd).then(function(message){
+        createAccount(req.body.username, username, req.body.pwd).then(function(message){
             console.log(message);
-            res.send(message);
+            var httpUName = req.body.username.split('@')
+            res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
         })
     }).catch(function(error){
         console.log("Error Creating Account: ", error);
@@ -147,10 +148,10 @@ app.post('/create', function(req, res){
 });
 
 //Creates an account, if the username is not already taken.
-function createAccount(username, password){
+function createAccount(username, hashedName, password){
     console.log("Starting Account Creation", username, password);
     return new Promise(function(resolve, reject){
-        getAccountData(username).then(function(data){
+        getAccountData(hashedName).then(function(data){
             console.log("Data: ", data);
             if(data != null){
                 resolve("That username is taken");
@@ -160,9 +161,13 @@ function createAccount(username, password){
                 var pwdsalt = bcrypt.genSaltSync(saltRounds);
                 encrypt(password, pwdsalt).then(function(hash){
                     var params = {
-                        Key: username,
+                        Key: hashedName,
                         ContentType: 'application/json',
-                        Body: JSON.stringify({'pwd': hash})
+                        Body: JSON.stringify({
+                            username: username,
+                            pwd: hash,
+                            data: getDummyData()
+                        })
                     }
                     console.log("Creating Account", params);
                     s3bucket.upload(params, function(err){
@@ -216,6 +221,37 @@ function encrypt(text, salt){
             }
         });
     });
+}
+
+function getDummyData(){
+    var user = Math.floor(Math.random() * 3);
+    if(user == 1){
+        return {
+            fname: 'Roger',
+            lname: 'Kimball',
+            birthday: 'November 27, 1940',
+            age: 77,
+            details: {}
+        }
+    }
+    else if(user == 2){
+        return {
+            fname: 'Johnnie',
+            lname: 'Healy',
+            birthday: 'July 6, 1940',
+            age: 78,
+            details: {}
+        }
+    }
+    else{
+        return {
+            fname: 'Dawn',
+            lname: 'Garcia',
+            birthday: 'October 8, 1993',
+            age: 24,
+            details: {}
+        }
+    }
 }
 
 //Run server @ IP if not running on localhost, else at port 8000
