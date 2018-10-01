@@ -178,23 +178,26 @@ function createAccount(uName, hashedUName, password){
             else{
                 var pwdsalt = bcrypt.genSaltSync(saltRounds);
                 encrypt(password, pwdsalt).then(function(hash){
-                    var params = {
-                        Key: hashedUName,
-                        ContentType: 'application/json',
-                        Body: JSON.stringify({
-                            username: uName,
-                            pwd: hash,
-                            data: getDummyData()//Generate fake user data for now
-                        })
-                    }
-                    console.log("Creating Account", params);
-                    s3bucket.upload(params, function(err){
-                        if(err){
-                            reject(err);
+                    //Generate fake user data for now
+                    getDummyData().then(function(json){
+                        var params = {
+                            Key: hashedUName,
+                            ContentType: 'application/json',
+                            Body: JSON.stringify({
+                                username: uName,
+                                pwd: hash,
+                                data: json
+                            })
                         }
-                        else{
-                            resolve("Successfully created account");
-                        }
+                        console.log("Creating Account", params);
+                        s3bucket.upload(params, function(err){
+                            if(err){
+                                reject(err);
+                            }
+                            else{
+                                resolve("Successfully created account");
+                            }
+                        });
                     });
                 });
             }
@@ -242,34 +245,21 @@ function encrypt(text, salt){
 }
 
 function getDummyData(){
-    var user = Math.floor(Math.random() * 3);
-    if(user == 1){
-        return {
-            fname: 'Roger',
-            lname: 'Kimball',
-            birthday: 'November 27, 1940',
-            age: 77,
-            details: {}
+    return new Promise(function(resolve, reject){
+        var num = Math.floor(Math.random() * 3);
+        var filename = 'dummy-account/test' + num + '.json';
+        var params = {
+            Key: filename
         }
-    }
-    else if(user == 2){
-        return {
-            fname: 'Johnnie',
-            lname: 'Healy',
-            birthday: 'July 6, 1940',
-            age: 78,
-            details: {}
-        }
-    }
-    else{
-        return {
-            fname: 'Dawn',
-            lname: 'Garcia',
-            birthday: 'October 8, 1993',
-            age: 24,
-            details: {}
-        }
-    }
+        s3bucket.getObject(params, function(err, data){
+            if(err){
+                reject(err);
+            }
+            else{
+                resolve(JSON.parse(data.Body.toString()));
+            }
+        });
+    });
 }
 
 //Run server @ IP if not running on localhost, else at port 8000
