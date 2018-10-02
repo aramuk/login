@@ -8,6 +8,7 @@ Security
 * AWS credentials stored in separtate location from server
 * Decryption-free password verification
 * Password strength rules (at least: 8 long, 1 #, 1 uppercase, 1 lowercase, 1 special character)
+* Cookie time-out for limited access
 
 Front-End
 * Efficient site navigation
@@ -17,4 +18,5 @@ Front-End
 The server is built using an `express.js` framework, which connects to an AWS S3 database, where all user data is stored. `bcrypt` is used as the salting and hashing algorithm. The front-end is built ground up using HTML, CSS, and javascript (including JQuery and JQuery Validation libraries). 
 
 ## Disclaimer
-Dummy user data was randomly generated. If there is any resemblance to a real life person, it was not intentional. Message me and I will take it down. 
+Random user data was generated for this project. It was not intended to imitate any
+person living or dead.
