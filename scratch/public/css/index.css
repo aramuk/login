@@ -59,6 +59,28 @@ h3{
     float: right;
 }
 
+.dropdown{
+    min-height: 40px;
+    line-height: 40px;
+    margin: 10 10 10 0;
+    font-size: 16px;
+    float: right;
+    list-style: none;
+    border-radius: 5px;
+}
+.dropdown:hover{
+    background-color: darkred;
+}
+.dropdown li{
+    border-radius: 0px;
+    cursor: pointer;
+    color: white;
+    background-color: brown;
+}
+.dropdown li:hover{
+    background-color: darkred;
+}
+
 .redirect{
     color: white;
     background-color: brown;
