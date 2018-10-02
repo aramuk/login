@@ -122,8 +122,8 @@ app.post('/create', function(req, res){
 
 //Get user data except for username and password and return to front-end
 app.get('/loadData', function(req, res){
-    var cookies = req.cookies.aramuk_login_credentials
-    if(cookies != null){
+    var cookie = getLoginCookie(req);
+    if(cookie != null){
         console.log(cookies.username);
         getAccountData(cookies.username).then(function(json){
             res.json(json.data);
@@ -136,6 +136,44 @@ app.get('/loadData', function(req, res){
         res.redirect('/login');
     }
 });
+
+app.post('/update', function(req, res){
+    var cookie = getLoginCookie(req);
+    if(cookie != null){
+        var uName = cookies.username);
+        getAccountData(uName).then(function(json){
+            json.data = req.body.data;
+            var params = {
+                Key: uName,
+                Body: JSON.stringify(json)
+            }
+            s3bucket.putObject(params, function(err){
+                if(err){
+                    res.status(500).send('uh oh');
+                }
+                else{
+                    res.send('success');
+                }
+            })
+        }).catch(function(error){
+            console.log("Error Getting Account Data: ", error);
+            res.status(500).send("There was an error retrieving your account information. Please try again.");
+        });
+    }
+    else{
+        res.redirect('/login');
+    }
+});
+
+function getLoginCookie(req){
+    var cookies = req.cookies.aramuk_login_credentials
+    if(cookies != null){
+        return cookies.username;
+    }
+    else{
+        return null;
+    }
+}
 
 //Checks to see if account + password combination is valid and returns appropriate response
 function verifyPassword(username, password){
