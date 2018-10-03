@@ -91,7 +91,7 @@ app.get('/verify', function(req ,res){
             if(success){
                 var options = {
                     httpOnly: true,
-                    maxAge: 1000 * 60 * 1 //login key lasts for 1 min; increase for actual use
+                    maxAge: 1000 * 60 * 5 //login key lasts for 1 min; increase for actual use
                 }
                 var credentials = {username: hashedUName};
                 res.cookie('aramuk_login_credentials', credentials, options);
@@ -122,8 +122,8 @@ app.post('/create', function(req, res){
 
 //Get user data except for username and password and return to front-end
 app.get('/loadData', function(req, res){
-    var cookie = getLoginCookie(req);
-    if(cookie != null){
+    var cookies = req.cookies.aramuk_login_credentials;
+    if(cookies != null){
         console.log(cookies.username);
         getAccountData(cookies.username).then(function(json){
             res.json(json.data);
@@ -138,9 +138,9 @@ app.get('/loadData', function(req, res){
 });
 
 app.post('/update', function(req, res){
-    var cookie = getLoginCookie(req);
-    if(cookie != null){
-        var uName = cookies.username);
+    var cookies = req.cookies.aramuk_login_credentials;
+    if(cookies != null){
+        var uName = cookies.username;
         getAccountData(uName).then(function(json){
             json.data = req.body.data;
             var params = {
@@ -164,16 +164,6 @@ app.post('/update', function(req, res){
         res.redirect('/login');
     }
 });
-
-function getLoginCookie(req){
-    var cookies = req.cookies.aramuk_login_credentials
-    if(cookies != null){
-        return cookies.username;
-    }
-    else{
-        return null;
-    }
-}
 
 //Checks to see if account + password combination is valid and returns appropriate response
 function verifyPassword(username, password){
