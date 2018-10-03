@@ -10,23 +10,32 @@
             <a href="/">
                 <div id="site-title">aramuk/login</div>
             </a>
-            <ul class='dropdown'>
-                <li><a id='uname' class=""></a></li>
-                <li><a class=''>Edit Profile</a></li>
-                <li><a href='/logout' class=''>Log Out</a></li>
-            </ul>
+            <div id='uname' class='log redirect'></div>
+            <div class='dropdown'>
+                <div class='portrait'></div>
+                <a class='redirect p-nav'>Edit Profile</a>
+                <a class='redirect p-nav' href='/logout'>Log Out</a>
+            </div>
         </div>
         <div class='form'>
         </form>
         <script>
             $(window).on('load', function(){
                 $.get('/loadData', function(data){
-                    $('#uname').append(data.fname + ' ' + data.lname + ' +');
+                    $('#uname').append(data.fname + ' ' + data.lname);
+                    $('#uname').css({'font-size':'16px', 'width':'120px'});
+                    $('.portrait').append(data.fname[0]);
                 });
             });
             
+
             $('#uname').click(function(){
-                $('#uname').next().css({'display':'block'});
+                if($('.dropdown').is(':visible')){
+                    $('.dropdown').css({'display':'none'});
+                }
+                else{
+                    $('.dropdown').css({'display':'block'});
+                }
             });
         </script>
     </body>
