@@ -64,6 +64,7 @@ app.get('/sign_up', function(req, res){
     res.sendFile(path.join(__dirname + '/public/create_account.html'));
 });
 
+//Page where user can edit password, and data
 app.get('/edit', function(req, res){
     if(req.cookies.aramuk_login_credentials != null){
         res.send('Edit your profile here');
@@ -240,6 +241,39 @@ function createAccount(uName, hashedUName, password){
             }
         }).catch(function(error){
             reject(error);
+        });
+    });
+}
+
+//new account creation function: doesn't recheck for availability; asynchronously generates salt.
+function createAcct(acctName, acctData){
+    console.log("Creating account: ", acctData.username);
+    return new Promise(function(resolve, reject){
+        bcrypt.genSalt(saltRounds, function(err, pwdSalt){
+            if(err){
+                reject(err);
+            }
+            else{
+                encrypt(acctData.password, pwdSalt).then(function(hashedPwd){
+                    acctData.password = hashedPwd;
+                    var params = {
+                        Key: acctName,
+                        ContentType: 'application/json',
+                        Body: acctData
+                    };
+                    console.log("Creating Account", params);
+                    s3bucket.upload(params, function(err){
+                        if(err){
+                            reject(err);
+                        }
+                        else{
+                            resolve("Successfully created account");
+                        }
+                    });
+                }).catch(function(error){
+                    reject(err);
+                });
+            }
         });
     });
 }
