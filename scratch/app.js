@@ -64,6 +64,15 @@ app.get('/sign_up', function(req, res){
     res.sendFile(path.join(__dirname + '/public/create_account.html'));
 });
 
+app.get('/edit', function(req, res){
+    if(req.cookies.aramuk_login_credentials != null){
+        res.send('Edit your profile here');
+    }
+    else{
+        res.send('Please login again to continue');
+    }
+});
+
 //Check account availability before account creation
 app.get('/checkAvailability', function(req, res){
     encrypt(req.query.username + '.json', usersalt).then(function(hash){
@@ -91,7 +100,7 @@ app.get('/verify', function(req ,res){
             if(success){
                 var options = {
                     httpOnly: true,
-                    maxAge: 1000 * 60 * 5 //login key lasts for 1 min; increase for actual use
+                    maxAge: 1000 * 60 * 1 //login key lasts for 1 min; increase for actual use
                 }
                 var credentials = {username: hashedUName};
                 res.cookie('aramuk_login_credentials', credentials, options);

@@ -13,7 +13,7 @@
             <div id='uname' class='log redirect'></div>
             <div class='dropdown'>
                 <div class='portrait'></div>
-                <a class='redirect p-nav'>Edit Profile</a>
+                <a class='redirect p-nav' href='/edit'>Edit Profile</a>
                 <a class='redirect p-nav' href='/logout'>Log Out</a>
             </div>
         </div>
@@ -27,7 +27,6 @@
                     $('.portrait').append(data.fname[0]);
                 });
             });
-            
 
             $('#uname').click(function(){
                 if($('.dropdown').is(':visible')){

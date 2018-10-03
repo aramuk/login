@@ -68,9 +68,9 @@ h3{
     border: 1px solid brown;
     border-top: 0;
     border-radius: 0px 0px 10px 10px;
-    width: 155px;
+    width: 150px;
     min-height: 160px;
-    right: 15;
+    right: 18px;
     top: 60px;
     list-style: none;
 }
