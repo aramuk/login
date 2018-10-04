@@ -106,8 +106,11 @@ app.get('/verify', function(req ,res){
                 var credentials = {username: hashedUName};
                 res.cookie('aramuk_login_credentials', credentials, options);
                 console.log("Cookie created");
+                res.redirect('/');
             }
-            res.json({verified: success});
+            else{
+                res.send("Login Failed");
+            }
         });
     }).catch(function(error){
         console.log("Error Verifying Login Credentials: ", error);
@@ -191,7 +194,7 @@ function verifyPassword(username, password){
             console.log("Data: ", data);
             //only proceed to verification if the account already exists
             if(data != null){
-                var hashedpwd = data.pwd;
+                var hashedpwd = data.password;
                 //use bcrypt to compare the stored password with the supplied one
                 bcrypt.compare(password, hashedpwd, function (err, res){
                     if(err){

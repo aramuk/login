@@ -31,15 +31,7 @@
 
             $('#submit').click(function(){
                 if(login.valid()){
-                    $.get('/verify', login.serialize(), function(data){
-                        if(data.verified){
-                            alert('Login Successful');
-                            window.location.replace('/');
-                        }
-                        else{
-                            alert('Login Failed');
-                        }
-                    });
+                    login.submit();
                 }
             }); 
 
