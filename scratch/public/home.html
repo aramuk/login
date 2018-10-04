@@ -10,7 +10,7 @@
             <a href="/">
                 <div id="site-title">aramuk/login</div>
             </a>
-            <div id='uname' class='log redirect'></div>
+            <div id='uname' class='log redirect' style='width: 120px;'></div>
             <div class='dropdown'>
                 <div class='portrait'></div>
                 <a class='redirect p-nav' href='/edit'>Edit Profile</a>
@@ -22,8 +22,14 @@
         <script>
             $(window).on('load', function(){
                 $.get('/loadData', function(data){
+                    if(data.fname == null){
+                        data = {
+                            fname: "Your",
+                            lname: "Account"
+                        }
+                    }
                     $('#uname').append(data.fname + ' ' + data.lname);
-                    $('#uname').css({'font-size':'16px', 'width':'120px'});
+                    $('#uname').css({'font-size':'16px', });
                     $('.portrait').append(data.fname[0]);
                 });
             });
