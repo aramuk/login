@@ -119,11 +119,26 @@ app.get('/verify', function(req ,res){
 app.post('/create', function(req, res){
     encrypt(req.body.username + ".json", usersalt).then(function(hash){
         var hashedUName = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
-        createAccount(req.body.username, hashedUName, req.body.pwd).then(function(message){
-            console.log(message);
-            var httpUName = req.body.username.split('@')
-            res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
-        })
+        getDummyData().then(function(json){
+            var data = {
+                username: req.body.username,
+                password: req.body.pwd,
+                data: json
+            }
+            // createAccount(req.body.username, hashedUName, req.body.pwd).then(function(message){
+            //     console.log(message);
+            //     var httpUName = req.body.username.split('@')
+            //     res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
+            // })
+            createAcct(hashedUName, data).then(function(success){
+                if(success){
+                    console.log("Successfully Created Account");
+                    var httpUName = req.body.username.split('@')
+                    // res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
+                    res.redirect('/login');
+                }
+            });
+        });
     }).catch(function(error){
         console.log("Error Creating Account: ", error);
         res.status(500).send("There was an error creating your account. Please try again.");
@@ -259,18 +274,17 @@ function createAcct(acctName, acctData){
                     var params = {
                         Key: acctName,
                         ContentType: 'application/json',
-                        Body: acctData
+                        Body: JSON.stringify(acctData)
                     };
-                    console.log("Creating Account", params);
                     s3bucket.upload(params, function(err){
                         if(err){
                             reject(err);
                         }
                         else{
-                            resolve("Successfully created account");
+                            resolve(true);
                         }
                     });
-                }).catch(function(error){
+                }).catch(function(err){
                     reject(err);
                 });
             }
@@ -287,7 +301,7 @@ function getAccountData(uName){
         }
         s3bucket.getObject(params, function(err, data){
             if(err && err.code == 'NoSuchKey'){
-                console.log("Account not found");
+                console.log("Account does not exist");
                 resolve(null);
             }
             else if(err){
@@ -303,7 +317,7 @@ function getAccountData(uName){
 
 //bcrypt a string given a salt and return the value as a promise
 function encrypt(text, salt){
-    console.log("Encrypting: ", text);
+    console.log("Encrypting Data");
     return new Promise(function(resolve, reject){
         bcrypt.hash(text, salt, function(err, hash){
             if(err){
@@ -317,11 +331,12 @@ function encrypt(text, salt){
 
 function getDummyData(){
     return new Promise(function(resolve, reject){
-        var num = Math.floor(Math.random() * 3);
-        var filename = 'dummy-account/test' + num + '.json';
+        var num = 1 + Math.floor(Math.random() * 3);
+        var filename = 'dummy-data/test' + num + '.json';
         var params = {
             Key: filename
         }
+        console.log('Getting Dummy Data: ', filename);
         s3bucket.getObject(params, function(err, data){
             if(err){
                 reject(err);
