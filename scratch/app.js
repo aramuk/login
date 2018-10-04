@@ -128,8 +128,8 @@ app.post('/create', function(req, res){
             if(success){
                 console.log("Successfully Created Account");
                 var httpUName = req.body.username.split('@')
-                // res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
-                res.redirect('/login');
+                res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
+                // res.redirect('/login');
             }
         });
     }).catch(function(error){
@@ -167,10 +167,10 @@ app.post('/update', function(req, res){
             }
             s3bucket.putObject(params, function(err){
                 if(err){
-                    res.status(500).send('uh oh');
+                    res.status(500).send("There was an error retreiving you account data");
                 }
                 else{
-                    res.send('success');
+                    res.send("Success");
                 }
             })
         }).catch(function(error){
@@ -185,7 +185,7 @@ app.post('/update', function(req, res){
 
 //Checks to see if account + password combination is valid and returns appropriate response
 function verifyPassword(username, password){
-    console.log("Starting Login: ", username, password);
+    console.log("Starting Login: ", username);
     return new Promise(function(resolve, reject){
         getAccountData(username).then(function(data){
             console.log("Data: ", data);
