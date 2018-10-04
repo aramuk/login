@@ -119,25 +119,18 @@ app.get('/verify', function(req ,res){
 app.post('/create', function(req, res){
     encrypt(req.body.username + ".json", usersalt).then(function(hash){
         var hashedUName = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
-        getDummyData().then(function(json){
-            var data = {
-                username: req.body.username,
-                password: req.body.pwd,
-                data: json
+        var acctData = {
+            username: req.body.username,
+            password: req.body.pwd,
+            data: {}
+        }
+        createAccount(hashedUName, acctData).then(function(success){
+            if(success){
+                console.log("Successfully Created Account");
+                var httpUName = req.body.username.split('@')
+                // res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
+                res.redirect('/login');
             }
-            // createAccount(req.body.username, hashedUName, req.body.pwd).then(function(message){
-            //     console.log(message);
-            //     var httpUName = req.body.username.split('@')
-            //     res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
-            // })
-            createAcct(hashedUName, data).then(function(success){
-                if(success){
-                    console.log("Successfully Created Account");
-                    var httpUName = req.body.username.split('@')
-                    // res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
-                    res.redirect('/login');
-                }
-            });
         });
     }).catch(function(error){
         console.log("Error Creating Account: ", error);
@@ -218,50 +211,8 @@ function verifyPassword(username, password){
     });
 }
 
-//Creates an account, if the username is not already taken.
-function createAccount(uName, hashedUName, password){
-    console.log("Starting Account Creation", uName, password);
-    return new Promise(function(resolve, reject){
-        getAccountData(hashedUName).then(function(data){
-            console.log("Data: ", data);
-            if(data != null){
-                resolve("That username is taken");
-            }
-            //only if account name is not taken, proceed with account creation.
-            else{
-                var pwdsalt = bcrypt.genSaltSync(saltRounds);
-                encrypt(password, pwdsalt).then(function(hash){
-                    //Generate fake user data for now
-                    getDummyData().then(function(json){
-                        var params = {
-                            Key: hashedUName,
-                            ContentType: 'application/json',
-                            Body: JSON.stringify({
-                                username: uName,
-                                pwd: hash,
-                                data: json
-                            })
-                        }
-                        console.log("Creating Account", params);
-                        s3bucket.upload(params, function(err){
-                            if(err){
-                                reject(err);
-                            }
-                            else{
-                                resolve("Successfully created account");
-                            }
-                        });
-                    });
-                });
-            }
-        }).catch(function(error){
-            reject(error);
-        });
-    });
-}
-
 //new account creation function: doesn't recheck for availability; asynchronously generates salt.
-function createAcct(acctName, acctData){
+function createAccount(acctName, acctData){
     console.log("Creating account: ", acctData.username);
     return new Promise(function(resolve, reject){
         bcrypt.genSalt(saltRounds, function(err, pwdSalt){
