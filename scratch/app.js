@@ -7,6 +7,8 @@ var bcrypt = require('bcrypt');
 const saltRounds = 12;
 const usersalt = "$2b$12$Blj9eNPAVPi5J2wAXwFDp."
 
+const uuid = require('uuid/v4');
+
 //AWS set up. 
 const AWS = require('aws-sdk');
 AWS.config.loadFromPath('./aws-config.json');//Access Keys in ./aws-config.json need to be updated
@@ -67,10 +69,10 @@ app.get('/sign_up', function(req, res){
 //Page where user can edit password, and data
 app.get('/edit', function(req, res){
     if(req.cookies.aramuk_login_credentials != null){
-        res.send('Edit your profile here');
+        res.send("Edit your profile here");
     }
     else{
-        res.send('Please login again to continue');
+        res.redirect('/login')
     }
 });
 
@@ -91,7 +93,6 @@ app.get('/checkAvailability', function(req, res){
         res.status(500).send("There was an error with our server, please try again later");
     });
 });
-
 
 //Endpoint where login credentials are sent from login screen
 app.get('/verify', function(req ,res){
@@ -191,7 +192,6 @@ function verifyPassword(username, password){
     console.log("Starting Login: ", username);
     return new Promise(function(resolve, reject){
         getAccountData(username).then(function(data){
-            console.log("Data: ", data);
             //only proceed to verification if the account already exists
             if(data != null){
                 var hashedpwd = data.password;
@@ -283,6 +283,30 @@ function encrypt(text, salt){
     });
 }
 
+function createSessionId(uName){
+    return new Promise(function(resolve, reject){
+        var id = uuid();
+        var data = {
+            username: uName,
+            password: uuid()
+        }
+        params = {
+            Key: id,
+            ContentType: 'application/json',
+            Body: JSON.stringify(data)
+        }
+        s3bucket.upload(params, function(err){
+            if(err){
+                reject(err);
+            }
+            else{
+                resolve(data);
+            }
+        });
+    });
+}
+
+//Get some dummy data to fill the account
 function getDummyData(){
     return new Promise(function(resolve, reject){
         var num = 1 + Math.floor(Math.random() * 3);
