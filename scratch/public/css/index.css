@@ -33,7 +33,7 @@ h3{
     width: 100%;
     background-color: brown;
     min-height: 60px;
-    box-shadow: 0px 0px 5px 0px black;
+    box-shadow: 0px 0px 7px 0px black;
     list-style-type: none;
     position: relative;
 }
@@ -73,7 +73,7 @@ h3{
     right: 18px;
     top: 60px;
     list-style: none;
-    box-shadow: 0px 0px 1px 0px black;
+    box-shadow: 0px 0px 1px 0px #aaa;
 }
 
 .p-nav{
@@ -119,6 +119,7 @@ h3{
     min-height: 200px;
     border: 1px solid brown;
     border-radius: 20px;
+    box-shadow: 0px 0px 1px 0px #aaa;
 }
 
 .error-msg{
