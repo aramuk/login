@@ -9,6 +9,8 @@ const usersalt = "$2b$12$Blj9eNPAVPi5J2wAXwFDp."
 
 const uuid = require('uuid/v4');
 
+const sessionLength = 60 * 2; //2 minute session. change for actual use
+
 //AWS set up. 
 const AWS = require('aws-sdk');
 AWS.config.loadFromPath('./aws-config.json');//Access Keys in ./aws-config.json need to be updated
@@ -22,11 +24,11 @@ app.use(cookieParser());
 //Go to home page
 app.get('/', function(req, res){
     //get any saved login credentials
-    var cookies = req.cookies.aramuk_login_credentials;
+    var cookie = req.cookies.aramuk_login_credentials;
 
     //if the user's is still in session, load their data
-    if(cookies != null){
-        console.log("Welcome Home: ", cookies.username);
+    if(cookie != null){
+        console.log("Welcome Home: ", cookie.sessionId);
         res.sendFile(path.join(__dirname + '/public/home.html'));
     }
     //else load default landing page
@@ -100,14 +102,16 @@ app.get('/verify', function(req ,res){
         var hashedUName = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
         verifyPassword(hashedUName, req.query.pwd).then(function(success){
             if(success){
-                var options = {
-                    httpOnly: true,
-                    maxAge: 1000 * 60 * 1 //login key lasts for 1 min; increase for actual use
-                }
-                var credentials = {username: hashedUName};
-                res.cookie('aramuk_login_credentials', credentials, options);
-                console.log("Cookie created");
-                res.redirect('/');
+                createSessionId(hashedUName).then(function(session){
+                    var options = {
+                        httpOnly: true,
+                        maxAge: 1000 * sessionLength
+                    }
+                    console.log(session);
+                    res.cookie('aramuk_login_credentials', session, options);
+                    console.log("Cookie created");
+                    res.redirect('/');
+                })
             }
             else{
                 res.send("Login Failed");
@@ -284,15 +288,18 @@ function encrypt(text, salt){
 }
 
 function createSessionId(uName){
+    console.log("Opening Session");
     return new Promise(function(resolve, reject){
         var id = uuid();
+        var pwd = uuid();
         var data = {
             username: uName,
-            password: uuid()
+            password: pwd
         }
         params = {
             Key: id,
             ContentType: 'application/json',
+            Expires: sessionLength,
             Body: JSON.stringify(data)
         }
         s3bucket.upload(params, function(err){
@@ -300,7 +307,8 @@ function createSessionId(uName){
                 reject(err);
             }
             else{
-                resolve(data);
+                session = {sessionId: id, password: pwd}
+                resolve(session);
             }
         });
     });
