@@ -150,9 +150,13 @@ app.post('/create', function(req, res){
 app.get('/loadData', function(req, res){
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
-        console.log(cookies.username);
-        getAccountData(cookies.username).then(function(json){
-            res.json(json.data);
+        console.log(cookies.sessionId);
+        getAccountData('sessions/' + cookies.sessionId).then(function(json){
+            console.log('Session credentials ' + JSON.stringify(json));
+            var accountName = json.username;
+            getAccountData(accountName).then(function(json){
+                res.json(json);
+            });
         }).catch(function(error){
             console.log("Error Getting Account Data: ", error);
             res.status(500).send("There was an error retrieving your account information. Please try again.");
@@ -297,7 +301,7 @@ function createSessionId(uName){
             password: pwd
         }
         params = {
-            Key: id,
+            Key: 'sessions/' + id,
             ContentType: 'application/json',
             Expires: sessionLength,
             Body: JSON.stringify(data)
