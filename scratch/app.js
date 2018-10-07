@@ -9,7 +9,7 @@ const usersalt = "$2b$12$Blj9eNPAVPi5J2wAXwFDp."
 
 const uuid = require('uuid/v4');
 
-const sessionLength = 60 * 2; //2 minute session. change for actual use
+const SESSION_LENGTH = 2 * 60 * 1000; //2 minute session. change for actual use
 
 //AWS set up. 
 const AWS = require('aws-sdk');
@@ -105,7 +105,7 @@ app.get('/verify', function(req ,res){
                 createSessionId(hashedUName).then(function(session){
                     var options = {
                         httpOnly: true,
-                        maxAge: 1000 * sessionLength
+                        maxAge: SESSION_LENGTH
                     }
                     console.log(session);
                     res.cookie('aramuk_login_credentials', session, options);
@@ -303,8 +303,7 @@ function createSessionId(uName){
         params = {
             Key: 'sessions/' + id,
             ContentType: 'application/json',
-            // Expires: sessionLength,
-            Expires: new Date(new Date().getTime() + 2 * 60000),//hopefully this works
+            Expires: new Date(new Date().getTime() + SESSION_LENGTH),//hopefully this works
             Body: JSON.stringify(data)
         }
         s3bucket.upload(params, function(err){
@@ -314,26 +313,6 @@ function createSessionId(uName){
             else{
                 session = {sessionId: id, password: pwd}
                 resolve(session);
-            }
-        });
-    });
-}
-
-//Get some dummy data to fill the account
-function getDummyData(){
-    return new Promise(function(resolve, reject){
-        var num = 1 + Math.floor(Math.random() * 3);
-        var filename = 'dummy-data/test' + num + '.json';
-        var params = {
-            Key: filename
-        }
-        console.log('Getting Dummy Data: ', filename);
-        s3bucket.getObject(params, function(err, data){
-            if(err){
-                reject(err);
-            }
-            else{
-                resolve(JSON.parse(data.Body.toString()));
             }
         });
     });
