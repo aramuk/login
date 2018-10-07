@@ -1,20 +1,22 @@
+//Libraries used
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var fs = require('fs');
 
 var bcrypt = require('bcrypt');
 const saltRounds = 12;
-const usersalt = "$2b$12$Blj9eNPAVPi5J2wAXwFDp."
+const usersalt = JSON.parse(fs.readFileSync('salts.json', 'utf8')).usersalt;//Load salt for usernames from external file
 
 const uuid = require('uuid/v4');
 
-const SESSION_LENGTH = 2 * 60 * 1000; //2 minute session. change for actual use
+const SESSION_LENGTH = 2 * 60 * 1000;//minutes * seconds * milliseconds
+const EXP_DATE = new Date(new Date().getTime() + SESSION_LENGTH); //2 minute session. change for actual use
 
 //AWS set up. 
 const AWS = require('aws-sdk');
 AWS.config.loadFromPath('./aws-config.json');//Access Keys in ./aws-config.json need to be updated
-var S3 = new AWS.S3();
 var s3bucket = new AWS.S3({params:{Bucket:'demo-account-db'}});
 
 var app = express();
@@ -105,7 +107,7 @@ app.get('/verify', function(req ,res){
                 createSessionId(hashedUName).then(function(session){
                     var options = {
                         httpOnly: true,
-                        maxAge: SESSION_LENGTH
+                        expires: EXP_DATE
                     }
                     console.log(session);
                     res.cookie('aramuk_login_credentials', session, options);
@@ -303,7 +305,6 @@ function createSessionId(uName){
         params = {
             Key: 'sessions/' + id,
             ContentType: 'application/json',
-            Expires: new Date(new Date().getTime() + SESSION_LENGTH),//hopefully this works
             Body: JSON.stringify(data)
         }
         s3bucket.upload(params, function(err){
