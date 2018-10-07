@@ -303,7 +303,8 @@ function createSessionId(uName){
         params = {
             Key: 'sessions/' + id,
             ContentType: 'application/json',
-            Expires: sessionLength,
+            // Expires: sessionLength,
+            Expires: new Date(new Date().getTime() + 2 * 60000),//hopefully this works
             Body: JSON.stringify(data)
         }
         s3bucket.upload(params, function(err){
