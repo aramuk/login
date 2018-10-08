@@ -1,19 +1,23 @@
 html{
     overflow-x: hidden;
 }
+
 body{
     margin: 0;
     padding: 0;
     font-family: 'Trebuchet MS', sans-serif;
 }
+
 a{
     text-decoration: none;
     color: inherit;
     font-size: 12px;
 }
+
 button{
     font-size: 14px;
 }
+
 input{
     width: 100%;
     border: 1px solid brown;
@@ -21,13 +25,21 @@ input{
     line-height: 24px;
     font-size: 16px;
     padding: 5px;
+    -webkit-box-shadow: 0 0 2px #aaa;
+            box-shadow: 0 0 2px #aaa;
 }
+
 label{
     padding: 5px;
 }
+
 h3{
     margin: 0px;
     padding-bottom: 10px;
+}
+
+form{
+    margin: 0 auto;
 }
 .menu-bar{
     width: 100%;
@@ -73,7 +85,8 @@ h3{
     right: 18px;
     top: 60px;
     list-style: none;
-    box-shadow: 0px 0px 1px 0px #aaa;
+    -webkit-box-shadow: 0 0 2px #aaa;
+            box-shadow: 0 0 2px #aaa;
 }
 
 .p-nav{
@@ -110,19 +123,32 @@ h3{
 
 .form{
     position: absolute;
-    top: 15%;
-    right: 25%;
-    left: 25%;
-    margin: 0 auto;
+    left: 33%;
+    right: 33%;
+    top: 100px;
     padding: 20px;
-    width: 400px;
+    min-width: 400px;
     min-height: 200px;
     border: 1px solid brown;
     border-radius: 20px;
-    box-shadow: 0px 0px 1px 0px #aaa;
+    -webkit-box-shadow: 0 0 3px #aaa;
+            box-shadow: 0 0 3px #aaa;
 }
 
 .error-msg{
     height: 20px;
     color: red;
 }
+
+.checklist{
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.checklist li{
+    padding: 1 15 1 15;
+}
+.checklist li:before {
+    content: '✓';
+  }
