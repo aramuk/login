@@ -28,6 +28,9 @@ input{
     -webkit-box-shadow: 0 0 2px #aaa;
             box-shadow: 0 0 2px #aaa;
 }
+input:focus{
+    outline: none;
+}
 
 label{
     padding: 5px;

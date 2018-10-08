@@ -22,11 +22,11 @@
             </form>
             <form id="create" action="/create" method="post">           
                 <ul class="checklist">Password must:
-                    <li>&nbsp; Be 8+ characters long</li>
-                    <li>&nbsp; Contain 1+ uppercase letters</li>
-                    <li>&nbsp; Contain 1+lowercase letters</li>
-                    <li>&nbsp; Contain 1+ numbers</li>
-                    <li>&nbsp; Contain 1 special character</li>
+                    <li name="eight">&nbsp; Be 8+ characters long</li>
+                    <li name="upper">&nbsp; Contain 1+ uppercase letters</li>
+                    <li name="lower">&nbsp; Contain 1+lowercase letters</li>
+                    <li name="number">&nbsp; Contain 1+ numbers</li>
+                    <li name="special">&nbsp; Contain 1 special character</li>
                 </ul>
                 <label for="pwd">Password:</label>
                 <input id="pwd"  name="pwd" type="password">
@@ -118,6 +118,40 @@
                     $(element).next().append(error);
                 } 
             });
+
+            $('#pwd').keyup(function(){
+                input = $('#pwd').val();
+                if(input.match(/.{8,}/)){
+                    $('li[name="eight"]').css({'color':'#56b701'});
+                }
+                else{
+                    $('li[name="eight"]').css({'color':'black'});
+                }
+                if(input.match(/(?=.*[A-Z])/)){
+                    $('li[name="upper"]').css({'color':'#56b701'});
+                }
+                else{
+                    $('li[name="upper"]').css({'color':'black'});
+                }
+                if(input.match(/(?=.*[a-z])/)){
+                    $('li[name="lower"]').css({'color':'#56b701'});
+                }
+                else{
+                    $('li[name="lower"]').css({'color':'black'});
+                }
+                if(input.match(/(?=.*[0-9])/)){
+                    $('li[name="number"]').css({'color':'#56b701'});
+                }
+                else{
+                    $('li[name="number"]').css({'color':'black'});
+                }
+                if(input.match(/(?=.*[!@#$%\^&*)(+=._-])/)){
+                    $('li[name="special"]').css({'color':'#56b701'});
+                }
+                else{
+                    $('li[name="special"]').css({'color':'black'});
+                }
+            })
         </script>
     </body>
 </html>
