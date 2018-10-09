@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.get('/', function(req, res){
     //get any saved login credentials
     var cookie = req.cookies.aramuk_login_credentials;
-
+    console.log(cookie);
     //if the user's is still in session, load their data
     if(cookie != null){
         console.log("Welcome Home: ", cookie.sessionId);
@@ -113,9 +113,6 @@ app.get('/verify', function(req ,res){
                     console.log(session);
                     res.cookie('aramuk_login_credentials', session, options);
                     console.log("Cookie created");
-                    if(req.query.edit!=null){
-                        res.redirect('/edit')
-                    }
                     res.redirect('/');
                 })
             }
@@ -173,7 +170,6 @@ app.get('/loadData', function(req, res){
     }
 });
 
-app.get('/loginData')
 app.post('/update', function(req, res){
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
