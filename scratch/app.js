@@ -7,7 +7,7 @@ var fs = require('fs');
 
 var bcrypt = require('bcrypt');
 const saltRounds = 12;
-const usersalt = JSON.parse(fs.readFileSync('salts.json', 'utf8')).usersalt;//Load salt for usernames from external file
+const usersalt = JSON.parse(fs.readFileSync('./salts.json', 'utf8')).usersalt;//Load salt for usernames from external file
 
 const uuid = require('uuid/v4');
 
@@ -63,7 +63,7 @@ app.get('/logout', function(req, res){
 });
 
 //Go to sign up page
-app.get('/sign_up', function(req, res){
+app.get('/signup', function(req, res){
     if(req.cookies.aramuk_login_credentials != null){
         console.log("Create a new account?");
     }
@@ -71,13 +71,14 @@ app.get('/sign_up', function(req, res){
 });
 
 //Page where user can edit password, and data
-app.get('/edit', function(req, res){
-    if(req.cookies.aramuk_login_credentials != null){
-        res.send("Edit your profile here");
-    }
-    else{
-        res.redirect('/login')
-    }
+app.get('/editaccount', function(req, res){
+    fs.readFile('./public/edit-form.json', function(err, data){
+        if(err){
+            console.log("ERROR: ", err);
+            res.status(500);
+        }
+        res.json(JSON.parse(data).body);
+    })
 });
 
 //Check account availability before account creation
@@ -112,6 +113,9 @@ app.get('/verify', function(req ,res){
                     console.log(session);
                     res.cookie('aramuk_login_credentials', session, options);
                     console.log("Cookie created");
+                    if(req.query.edit!=null){
+                        res.redirect('/edit')
+                    }
                     res.redirect('/');
                 })
             }
@@ -169,6 +173,7 @@ app.get('/loadData', function(req, res){
     }
 });
 
+app.get('/loginData')
 app.post('/update', function(req, res){
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
