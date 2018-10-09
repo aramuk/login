@@ -13,12 +13,11 @@
             <div id='uname' class='log redirect' style='width: 120px;'></div>
             <div class='dropdown'>
                 <div class='portrait'></div>
-                <a class='redirect p-nav' href='/edit'>Edit Profile</a>
+                <a id='edit' class='redirect p-nav'>Edit Profile</a>
                 <a class='redirect p-nav' href='/logout'>Log Out</a>
             </div>
         </div>
-        <div class='form'>
-        </form>
+        <div class='content'></div>
         <script>
             $(window).on('load', function(){
                 $.get('/loadData', function(data){
@@ -41,6 +40,13 @@
                 else{
                     $('.dropdown').css({'display':'block'});
                 }
+            });
+
+            $('#edit').click(function(){
+                $.get('/editaccount', function(data){
+                    $('.content').append(data);
+                    $('.dropdown').css({'display':'none'});
+                });
             });
         </script>
     </body>
