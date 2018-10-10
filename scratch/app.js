@@ -171,27 +171,39 @@ app.get('/loadData', function(req, res){
 });
 
 app.post('/update', function(req, res){
+    console.log("Updating name to: ", req.body.fname, req.body.lname);
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
-        var uName = cookies.username;
-        getAccountData(uName).then(function(json){
-            json.data = req.body.data;
-            var params = {
-                Key: uName,
-                Body: JSON.stringify(json)
-            }
-            s3bucket.putObject(params, function(err){
-                if(err){
-                    res.status(500).send("There was an error retreiving you account data");
-                }
-                else{
-                    res.send("Success");
-                }
-            })
-        }).catch(function(error){
-            console.log("Error Getting Account Data: ", error);
-            res.status(500).send("There was an error retrieving your account information. Please try again.");
-        });
+        console.log(cookies.sessionId);
+        // getAccountData('sessions/' + cookies.sessionId).then(function(json){
+        //     console.log('Session credentials ' + JSON.stringify(json));
+        //     var accountName = json.username;
+        //     getAccountData(accountName).then(function(json){
+        //         console.log(data)
+        //     });
+        // }).catch(function(error){
+        //     console.log("Error Getting Account Data: ", error);
+        //     res.status(500).send("There was an error retrieving your account information. Please try again.");
+        // });
+        // var uName = cookies.username;
+        // getAccountData(uName).then(function(json){
+        //     json.data = req.body.data;
+        //     var params = {
+        //         Key: uName,
+        //         Body: JSON.stringify(json)
+        //     }
+        //     s3bucket.putObject(params, function(err){
+        //         if(err){
+        //             res.status(500).send("There was an error retreiving you account data");
+        //         }
+        //         else{
+        //             res.send("Success");
+        //         }
+        //     })
+        // }).catch(function(error){
+        //     console.log("Error Getting Account Data: ", error);
+        //     res.status(500).send("There was an error retrieving your account information. Please try again.");
+        // });
     }
     else{
         res.redirect('/login');
