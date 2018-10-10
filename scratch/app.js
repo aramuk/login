@@ -175,16 +175,32 @@ app.post('/update', function(req, res){
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
         console.log(cookies.sessionId);
-        // getAccountData('sessions/' + cookies.sessionId).then(function(json){
-        //     console.log('Session credentials ' + JSON.stringify(json));
-        //     var accountName = json.username;
-        //     getAccountData(accountName).then(function(json){
-        //         console.log(data)
-        //     });
-        // }).catch(function(error){
-        //     console.log("Error Getting Account Data: ", error);
-        //     res.status(500).send("There was an error retrieving your account information. Please try again.");
-        // });
+        getAccountData('sessions/' + cookies.sessionId).then(function(json){
+            console.log('Session credentials ' + JSON.stringify(json));
+            var accountName = json.username;
+            getAccountData(accountName).then(function(json){
+                json.data = {
+                    fname: req.body.fname,
+                    lname: req.body.lname
+                }
+                var params = {
+                    Key: accountName,
+                    ContentType: 'application/json',
+                    Body: JSON.stringify(json)
+                }
+                s3bucket.upload(params, function(err){
+                    if(err){
+                        res.status(500).send("There was an error updating your account info.")
+                    }
+                    else{
+                        res.redirect('/')
+                    }
+                })
+            });
+        }).catch(function(error){
+            console.log("Error Getting Account Data: ", error);
+            res.status(500).send("There was an error retrieving your account information. Please try again.");
+        });
         // var uName = cookies.username;
         // getAccountData(uName).then(function(json){
         //     json.data = req.body.data;
