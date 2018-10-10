@@ -158,7 +158,7 @@ app.get('/loadData', function(req, res){
             console.log('Session credentials ' + JSON.stringify(json));
             var accountName = json.username;
             getAccountData(accountName).then(function(json){
-                res.json(json);
+                res.json(json.data);
             });
         }).catch(function(error){
             console.log("Error Getting Account Data: ", error);
