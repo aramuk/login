@@ -50,11 +50,16 @@
                         if(data.fname == null){
                             data = {
                                 fname: "Your",
-                                lname: "Account"
+                                lname: "Account",
+                                
                             }
+                        }
+                        if(data.bday == null){
+                            data.bday = "00/00/0000"
                         }
                         $('#fname').val(data.fname);
                         $('#lname').val(data.lname);
+                        $('#bday').val(data.bday);
                     });
                 });
             });
