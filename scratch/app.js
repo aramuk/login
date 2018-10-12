@@ -11,7 +11,7 @@ const usersalt = JSON.parse(fs.readFileSync('./salts.json', 'utf8')).usersalt;//
 
 const uuid = require('uuid/v4');
 
-const SESSION_LENGTH = 2 * 60 * 1000;//minutes * seconds * milliseconds
+const SESSION_LENGTH = 10 * 60 * 1000;//minutes * seconds * milliseconds
 const EXP_DATE = new Date(new Date().getTime() + SESSION_LENGTH); //2 minute session. change for actual use
 
 //AWS set up. 
@@ -171,7 +171,7 @@ app.get('/loadData', function(req, res){
 });
 
 app.post('/update', function(req, res){
-    console.log("Updating name to: ", req.body.fname, req.body.lname);
+    console.log("Updating data to: ", req.body.fname, req.body.lname, req.body.bday);
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
         console.log(cookies.sessionId);
@@ -181,8 +181,10 @@ app.post('/update', function(req, res){
             getAccountData(accountName).then(function(json){
                 json.data = {
                     fname: req.body.fname,
-                    lname: req.body.lname
+                    lname: req.body.lname,
+                    bday: req.body.bday
                 }
+                console.log('Body', json);
                 var params = {
                     Key: accountName,
                     ContentType: 'application/json',
@@ -201,25 +203,6 @@ app.post('/update', function(req, res){
             console.log("Error Getting Account Data: ", error);
             res.status(500).send("There was an error retrieving your account information. Please try again.");
         });
-        // var uName = cookies.username;
-        // getAccountData(uName).then(function(json){
-        //     json.data = req.body.data;
-        //     var params = {
-        //         Key: uName,
-        //         Body: JSON.stringify(json)
-        //     }
-        //     s3bucket.putObject(params, function(err){
-        //         if(err){
-        //             res.status(500).send("There was an error retreiving you account data");
-        //         }
-        //         else{
-        //             res.send("Success");
-        //         }
-        //     })
-        // }).catch(function(error){
-        //     console.log("Error Getting Account Data: ", error);
-        //     res.status(500).send("There was an error retrieving your account information. Please try again.");
-        // });
     }
     else{
         res.redirect('/login');
