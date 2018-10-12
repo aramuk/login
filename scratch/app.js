@@ -291,6 +291,20 @@ function getAccountData(uName){
     });
 }
 
+function getAccountDataFromSession(sessionID){
+    console.log("Getting account data from session:", sessionID);
+    return new Promise(function(resolve, reject){
+        getAccountData('sessions/' + sessionID).then(function(sessionCreds){
+            var accountName = sessionCreds.username;
+            getAccountData(accountName).then(function(userData){
+                resolve(userData);
+            });
+        }).catch(function(error){
+            reject(error);
+        });
+    }); 
+}
+
 //bcrypt a string given a salt and return the value as a promise
 function encrypt(text, salt){
     console.log("Encrypting Data");
