@@ -153,13 +153,8 @@ app.post('/create', function(req, res){
 app.get('/loadData', function(req, res){
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
-        console.log(cookies.sessionId);
-        getAccountData('sessions/' + cookies.sessionId).then(function(json){
-            console.log('Session credentials ' + JSON.stringify(json));
-            var accountName = json.username;
-            getAccountData(accountName).then(function(json){
-                res.json(json.data);
-            });
+        getAccountDataFromSession(cookies.sessionId).then(function(json){
+            res.json(json.data);
         }).catch(function(error){
             console.log("Error Getting Account Data: ", error);
             res.status(500).send("There was an error retrieving your account information. Please try again.");
@@ -288,13 +283,12 @@ function getAccountData(uName){
     });
 }
 
+//Get account data from the database given a sessionID
 function getAccountDataFromSession(sessionID){
     console.log("Getting account data from session:", sessionID);
     return new Promise(function(resolve, reject){
         getAccountData('sessions/' + sessionID).then(function(sessionCreds){
-            console.log('SessionCreds', sessionCreds);
             var accountName = sessionCreds.username;
-            console.log('AcctName: ', accountName);
             getAccountData(accountName).then(function(userData){
                 userData.hashedUName = accountName;
                 resolve(userData);
