@@ -174,30 +174,27 @@ app.post('/update', function(req, res){
     console.log("Updating data to: ", req.body.fname, req.body.lname, req.body.bday);
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
-        console.log(cookies.sessionId);
-        getAccountData('sessions/' + cookies.sessionId).then(function(json){
-            console.log('Session credentials ' + JSON.stringify(json));
-            var accountName = json.username;
-            getAccountData(accountName).then(function(json){
-                json.data = {
-                    fname: req.body.fname,
-                    lname: req.body.lname,
-                    bday: req.body.bday
+        getAccountDataFromSession(cookies.sessionId).then(function(json){
+            console.log(json.data, req.body);
+            json.data = {
+                fname: req.body.fname,
+                lname: req.body.lname,
+                bday: req.body.bday
+            };
+
+            var params = {
+                Key: json.hashedUName,
+                ContentType: 'application/json',
+                Body: JSON.stringify(json)
+            };
+
+            s3bucket.upload(params, function(err){
+                if(err){
+                    res.status(500).send("There was an error updating your account info.")
                 }
-                console.log('Body', json);
-                var params = {
-                    Key: accountName,
-                    ContentType: 'application/json',
-                    Body: JSON.stringify(json)
+                else{
+                    res.redirect('/')
                 }
-                s3bucket.upload(params, function(err){
-                    if(err){
-                        res.status(500).send("There was an error updating your account info.")
-                    }
-                    else{
-                        res.redirect('/')
-                    }
-                })
             });
         }).catch(function(error){
             console.log("Error Getting Account Data: ", error);
@@ -295,8 +292,11 @@ function getAccountDataFromSession(sessionID){
     console.log("Getting account data from session:", sessionID);
     return new Promise(function(resolve, reject){
         getAccountData('sessions/' + sessionID).then(function(sessionCreds){
+            console.log('SessionCreds', sessionCreds);
             var accountName = sessionCreds.username;
+            console.log('AcctName: ', accountName);
             getAccountData(accountName).then(function(userData){
+                userData.hashedUName = accountName;
                 resolve(userData);
             });
         }).catch(function(error){
