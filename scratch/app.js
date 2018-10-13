@@ -11,8 +11,8 @@ const usersalt = JSON.parse(fs.readFileSync('./salts.json', 'utf8')).usersalt;//
 
 const uuid = require('uuid/v4');
 
-const SESSION_LENGTH = 10 * 60 * 1000;//minutes * seconds * milliseconds
-const EXP_DATE = new Date(new Date().getTime() + SESSION_LENGTH); //2 minute session. change for actual use
+const SESSION_LENGTH = 5 * 60 * 1000;//minutes * seconds * milliseconds
+const EXP_DATE = new Date(new Date().getTime() + SESSION_LENGTH); //5 minute session. change for actual use
 
 //AWS set up. 
 const AWS = require('aws-sdk');
@@ -27,10 +27,9 @@ app.use(cookieParser());
 app.get('/', function(req, res){
     //get any saved login credentials
     var cookie = req.cookies.aramuk_login_credentials;
-    console.log(cookie);
-    //if the user's is still in session, load their data
+    //if the user is still in session, load their data
     if(cookie != null){
-        console.log("Welcome Home: ", cookie.sessionId);
+        console.log("Welcome Home: ", cookie.sessionID);
         res.sendFile(path.join(__dirname + '/public/home.html'));
     }
     //else load default landing page
@@ -51,8 +50,7 @@ app.get('/login', function(req, res){
         res.sendFile(path.join(__dirname + "/public/login.html"));
     }
     else{
-        //I suppose the login button needs to disappear at some point but this should disable it for now
-        res.send("Logout first before you login");
+        res.redirect('/');
     }
 });
 
@@ -65,7 +63,7 @@ app.get('/logout', function(req, res){
 //Go to sign up page
 app.get('/signup', function(req, res){
     if(req.cookies.aramuk_login_credentials != null){
-        console.log("Create a new account?");
+        res.redirect('/logout');
     }
     res.sendFile(path.join(__dirname + '/public/create_account.html'));
 });
@@ -74,8 +72,8 @@ app.get('/signup', function(req, res){
 app.get('/editaccount', function(req, res){
     fs.readFile('./public/edit-form.json', function(err, data){
         if(err){
-            console.log("ERROR: ", err);
-            res.status(500);
+            console.log("Error reading edit-form.json: ", err);
+            res.status(500).send("Could not get permission to edit data");
         }
         res.json(JSON.parse(data).body);
     })
@@ -93,8 +91,8 @@ app.get('/checkAvailability', function(req, res){
                 res.json({available : true});
             }
         });
-    }).catch(function(err){
-        console.log("Error: ", err);
+    }).catch(function(error){
+        console.log("Error: ", error);
         res.status(500).send("There was an error with our server, please try again later");
     });
 });
@@ -105,16 +103,15 @@ app.get('/verify', function(req ,res){
         var hashedUName = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
         verifyPassword(hashedUName, req.query.pwd).then(function(success){
             if(success){
-                createSessionId(hashedUName).then(function(session){
+                createSessionID(hashedUName).then(function(session){
                     var options = {
                         httpOnly: true,
                         expires: EXP_DATE
                     }
-                    console.log(session);
                     res.cookie('aramuk_login_credentials', session, options);
-                    console.log("Cookie created");
+                    console.log("Cookie created: ", session);
                     res.redirect('/');
-                })
+                });
             }
             else{
                 res.send("Login Failed");
@@ -153,7 +150,7 @@ app.post('/create', function(req, res){
 app.get('/loadData', function(req, res){
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
-        getAccountDataFromSession(cookies.sessionId).then(function(json){
+        getAccountDataFromSession(cookies.sessionID).then(function(json){
             res.json(json.data);
         }).catch(function(error){
             console.log("Error Getting Account Data: ", error);
@@ -166,21 +163,20 @@ app.get('/loadData', function(req, res){
 });
 
 app.post('/update', function(req, res){
-    console.log("Updating data to: ", req.body.fname, req.body.lname, req.body.bday);
     var cookies = req.cookies.aramuk_login_credentials;
     if(cookies != null){
-        getAccountDataFromSession(cookies.sessionId).then(function(json){
-            console.log(json.data, req.body);
-            json.data = {
+        getAccountDataFromSession(cookies.sessionID).then(function(userinfo){
+            //Update user data
+            userinfo.data = {
                 fname: req.body.fname,
                 lname: req.body.lname,
                 bday: req.body.bday
             };
 
             var params = {
-                Key: json.hashedUName,
+                Key: userinfo.hashedUName,
                 ContentType: 'application/json',
-                Body: JSON.stringify(json)
+                Body: JSON.stringify(userinfo)
             };
 
             s3bucket.upload(params, function(err){
@@ -222,8 +218,8 @@ function verifyPassword(username, password){
             else{
                 resolve("Invalid Username + Password Combination");
             }
-        }).catch(function(error){
-            reject(error);
+        }).catch(function(err){
+            reject(err);
         });
     });
 }
@@ -237,6 +233,7 @@ function createAccount(acctName, acctData){
                 reject(err);
             }
             else{
+                //Encrypt password, then upload account data to database
                 encrypt(acctData.password, pwdSalt).then(function(hashedPwd){
                     acctData.password = hashedPwd;
                     var params = {
@@ -260,7 +257,7 @@ function createAccount(acctName, acctData){
     });
 }
 
-//Get account data from the database if it exists, else return null
+//Get account data from the database if it exists or return null if it doesn't
 function getAccountData(uName){
     console.log("Searching for account: ", uName);
     return new Promise(function(resolve, reject){
@@ -293,8 +290,8 @@ function getAccountDataFromSession(sessionID){
                 userData.hashedUName = accountName;
                 resolve(userData);
             });
-        }).catch(function(error){
-            reject(error);
+        }).catch(function(err){
+            reject(err);
         });
     }); 
 }
@@ -313,7 +310,8 @@ function encrypt(text, salt){
     });
 }
 
-function createSessionId(uName){
+//Create a session within the database that holds user data temporarily
+function createSessionID(uName){
     console.log("Opening Session");
     return new Promise(function(resolve, reject){
         var id = uuid();
@@ -332,7 +330,7 @@ function createSessionId(uName){
                 reject(err);
             }
             else{
-                session = {sessionId: id, password: pwd}
+                session = {sessionID: id, password: pwd}
                 resolve(session);
             }
         });
