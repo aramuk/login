@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var fs = require('fs');
 
 var bcrypt = require('bcrypt');
@@ -22,6 +23,7 @@ var s3bucket = new AWS.S3({params:{Bucket:'demo-account-db'}});
 var app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(session());
 
 //Go to home page
 app.get('/', function(req, res){
@@ -83,6 +85,7 @@ app.get('/editaccount', function(req, res){
 app.get('/checkAvailability', function(req, res){
     encrypt(req.query.username + '.json', usersalt).then(function(hash){
         hash = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
+        //Check to see if username exists by getting data for hashed username
         getAccountData(hash).then(function(data){
             if(data != null){
                 res.json({available : false});
@@ -103,6 +106,7 @@ app.get('/verify', function(req ,res){
         var hashedUName = hash.replace(new RegExp(/\//g), '$');//can't have slashes in the filename
         verifyPassword(hashedUName, req.query.pwd).then(function(success){
             if(success){
+                //Create a session in the database if data verified
                 createSessionID(hashedUName).then(function(session){
                     var options = {
                         httpOnly: true,
@@ -132,12 +136,13 @@ app.post('/create', function(req, res){
             password: req.body.pwd,
             data: {}
         }
+        //Create an account with the specified user data and username
         createAccount(hashedUName, acctData).then(function(success){
             if(success){
                 console.log("Successfully Created Account");
-                var httpUName = req.body.username.split('@')
+                var httpUName = req.body.username.split('@');
+                //Log the user in automatically following account creation
                 res.redirect('/verify?username=' + httpUName[0] + '%40' + httpUName[1] + '&pwd=' + req.body.pwd);
-                // res.redirect('/login');
             }
         });
     }).catch(function(error){
@@ -228,6 +233,7 @@ function verifyPassword(username, password){
 function createAccount(acctName, acctData){
     console.log("Creating account: ", acctData.username);
     return new Promise(function(resolve, reject){
+        //Gerenate a salt for the password before creating an account
         bcrypt.genSalt(saltRounds, function(err, pwdSalt){
             if(err){
                 reject(err);
@@ -241,6 +247,7 @@ function createAccount(acctName, acctData){
                         ContentType: 'application/json',
                         Body: JSON.stringify(acctData)
                     };
+                    //Upload account data to database
                     s3bucket.upload(params, function(err){
                         if(err){
                             reject(err);
@@ -264,6 +271,7 @@ function getAccountData(uName){
         var params = {
             Key: uName
         }
+        //Attempt to get corresponding account data
         s3bucket.getObject(params, function(err, data){
             if(err && err.code == 'NoSuchKey'){
                 console.log("Account does not exist");
@@ -284,6 +292,7 @@ function getAccountData(uName){
 function getAccountDataFromSession(sessionID){
     console.log("Getting account data from session:", sessionID);
     return new Promise(function(resolve, reject){
+        //Get login credentials from session data, then get user data from login credentials
         getAccountData('sessions/' + sessionID).then(function(sessionCreds){
             var accountName = sessionCreds.username;
             getAccountData(accountName).then(function(userData){
