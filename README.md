@@ -25,7 +25,8 @@ first be decrypted before the hacker can learn the user data.
 There are many nuances to a hashing algorithm, and I do not expect to be able to write a safe hashing algorithm on my own at the current time, so I opted into using `bcrypt`.
 `bcrypt` is a common encryption method due to its strength. `bcrypt` takes care of salting and hashing, which are the bases of all encryption today. `bcrypt` asyncrhonously generates hashes, which makes it more resistant to timing-based attacks. `bcrypt` also compares hashes to plaintext passwords without decrypting anything, so nowhere along the way is the user's data exposed.
 
-**AWS setup**
+**AWS setup**:
+This application stores data on the AWS S3 database. The server gains access to the bucket through IAM credentials. This means that the server does not have root access to the database and if the credentials are leaked, then they can be wiped and regenerated. Note that the credentials are stored in a tertiary file, not the actual server code.
 
 ### Front-End
 
