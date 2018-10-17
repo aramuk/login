@@ -15,26 +15,24 @@ A list of all the security features I have implemented in this project
 * Cookie expiration for limited access
 
 
-### Back-End
-**`bcrypt` hashing:**
-It is important that all the data is hashed before it is stored in the database. This
-helps protect user information if any data is leaked from the database in an attack.
-Hashing user data means that even if data is leaked, it is of little value as it must 
-first be decrypted before the hacker can learn the user data.
-
-There are many nuances to a hashing algorithm, and I do not expect to be able to write a safe hashing algorithm on my own at the current time, so I opted into using `bcrypt`.
-`bcrypt` is a common encryption method due to its strength. `bcrypt` takes care of salting and hashing, which are the bases of all encryption today. `bcrypt` asyncrhonously generates hashes, which makes it more resistant to timing-based attacks. `bcrypt` also compares hashes to plaintext passwords without decrypting anything, so nowhere along the way is the user's data exposed.
-
-**AWS setup:**
-This application stores data on the AWS S3 database. The server gains access to the bucket through IAM credentials. This means that the server does not have root access to the database and if the credentials are leaked, then they can be wiped and regenerated. Note that the credentials are stored in a tertiary file, not the actual server code. This prevents their leakage as well.
-
-### Front-End
 **Password Strength Rules:**
 Password strength is important when discussing how to protect user data. If the data is leaked in any form from the database, the hacker will attempt to use some algorithm to try to decrypt the hash. A stronger password will delay that algorithm long enough that you may have the opportunity to change it and keep your data secure.
 
 Password length makes decryption by brute force considerably harder, as the number of character combinations increases exponentially with each additional character. 
 
 Password complexity rules (1 uppercase, 1 lowercase, etc.) discourage common phrases and words that a smarter hacker might check for when attempting to decrypt your password.
+
+**Encryption:**
+It is important that all the data is encrypted before it is stored in the database. This helps protect user information if any data is leaked from the database in an attack. Encrypting user data means that even if data is leaked, it is of little value as it must first be decrypted before the hacker can learn the user data.
+
+Encryption algorithms are an extremely dense topic, but at their core share two common features in modern cybersecurity: hashing and salting. _Hashing_ uses a specific function to scramble and reexpress a simple value as a complex string. This string does not contain any raw user data, but is rather a highly incoherent representation of it. This means that if the hashed value is leaked at any point, the data is of little value until it is decrypted. _Salting_ is the other main component of encryption. To increase the difficulty of decrypting a hash, a random string value is added to the data before it is encrypted. This means that a potential attacker will have little success if they try to crack a hashing algorithm by trying common phrases and patterns.
+
+**`bcrypt`:**
+There are many nuances to a hashing algorithm, and I do not expect to be able to write a safe hashing algorithm on my own at the current time, so I opted into using `bcrypt`.
+`bcrypt` is a common encryption method due to its strength. `bcrypt` takes care of salting and hashing, which are the bases of all encryption today. `bcrypt` asyncrhonously generates hashes, which makes it more resistant to timing-based attacks. `bcrypt` also compares hashes to plaintext passwords without decrypting anything, so nowhere along the way is the user's data exposed.
+
+**AWS setup:**
+This application stores data on the AWS S3 database. The server gains access to the bucket through IAM credentials. This means that the server does not have root access to the database and if the credentials are leaked, then they can be wiped and regenerated. Note that the credentials are stored in a tertiary file, not the actual server code. This prevents their leakage as well.
 
 ## Further Details
 The server is built using an `express.js` framework, which connects to an AWS S3 database, where all user data is stored. `bcrypt` is used as the salting and hashing algorithm. The front-end is built from the ground up using HTML, CSS, and javascript (including JQuery and JQuery Validation libraries). 
