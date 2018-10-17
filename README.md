@@ -5,8 +5,8 @@ A basic end-to-end user authentication system, built largely from scratch.
 A list of all the security features I have implemented in this project
 * `bcrypt` user data hashing
 * Username and password salting
-* AWS credentials stored in separtate location from server
 * Decryption-free password verification
+* AWS credentials stored in separtate location from server
 * Password strength rules (at least: 8 long, 1 #, 1 uppercase, 1 lowercase, 1 special character)
 * Logging in opens a temporary session on the database
 * Cookie placed only contains session credentials
@@ -25,10 +25,16 @@ first be decrypted before the hacker can learn the user data.
 There are many nuances to a hashing algorithm, and I do not expect to be able to write a safe hashing algorithm on my own at the current time, so I opted into using `bcrypt`.
 `bcrypt` is a common encryption method due to its strength. `bcrypt` takes care of salting and hashing, which are the bases of all encryption today. `bcrypt` asyncrhonously generates hashes, which makes it more resistant to timing-based attacks. `bcrypt` also compares hashes to plaintext passwords without decrypting anything, so nowhere along the way is the user's data exposed.
 
-**AWS setup**:
-This application stores data on the AWS S3 database. The server gains access to the bucket through IAM credentials. This means that the server does not have root access to the database and if the credentials are leaked, then they can be wiped and regenerated. Note that the credentials are stored in a tertiary file, not the actual server code.
+**AWS setup:**
+This application stores data on the AWS S3 database. The server gains access to the bucket through IAM credentials. This means that the server does not have root access to the database and if the credentials are leaked, then they can be wiped and regenerated. Note that the credentials are stored in a tertiary file, not the actual server code. This prevents their leakage as well.
 
 ### Front-End
+**Password Strength Rules:**
+Password strength is important when discussing how to protect user data. If the data is leaked in any form from the database, the hacker will attempt to use some algorithm to try to decrypt the hash. A stronger password will delay that algorithm long enough that you may have the opportunity to change it and keep your data secure.
+
+Password length makes decryption by brute force considerably harder, as the number of character combinations increases exponentially with each additional character. 
+
+Password complexity rules (1 uppercase, 1 lowercase, etc.) discourage common phrases and words that a smarter hacker might check for when attempting to decrypt your password.
 
 ## Further Details
 The server is built using an `express.js` framework, which connects to an AWS S3 database, where all user data is stored. `bcrypt` is used as the salting and hashing algorithm. The front-end is built from the ground up using HTML, CSS, and javascript (including JQuery and JQuery Validation libraries). 
