@@ -25,6 +25,8 @@ first be decrypted before the hacker can learn the user data.
 There are many nuances to a hashing algorithm, and I do not expect to be able to write a safe hashing algorithm on my own at the current time, so I opted into using `bcrypt`.
 `bcrypt` is a common encryption method due to its strength. `bcrypt` takes care of salting and hashing, which are the bases of all encryption today. `bcrypt` asyncrhonously generates hashes, which makes it more resistant to timing-based attacks. `bcrypt` also compares hashes to plaintext passwords without decrypting anything, so nowhere along the way is the user's data exposed.
 
+**AWS setup**
+
 ### Front-End
 
 ## Further Details
