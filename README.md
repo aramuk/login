@@ -28,8 +28,9 @@ It is important that all the data is encrypted before it is stored in the databa
 Encryption algorithms are an extremely dense topic, but at their core share two common features in modern cybersecurity: hashing and salting. _Hashing_ uses a specific function to scramble and reexpress a simple value as a complex string. This string does not contain any raw user data, but is rather a highly incoherent representation of it. This means that if the hashed value is leaked at any point, the data is of little value until it is decrypted. _Salting_ is the other main component of encryption. To increase the difficulty of decrypting a hash, a random string value is added to the data before it is encrypted. This means that a potential attacker will have little success if they try to crack a hashing algorithm by trying common phrases and patterns.
 
 **`bcrypt`:**
-There are many nuances to a hashing algorithm, and I do not expect to be able to write a safe hashing algorithm on my own at the current time, so I opted into using `bcrypt`.
-`bcrypt` is a common encryption method due to its strength. `bcrypt` takes care of salting and hashing, which are the bases of all encryption today. `bcrypt` asyncrhonously generates hashes, which makes it more resistant to timing-based attacks. `bcrypt` also compares hashes to plaintext passwords without decrypting anything, so nowhere along the way is the user's data exposed.
+There are many nuances to a hashing algorithm, and I do not expect to be able to write a safe hashing algorithm on my own at the current time. As a result, I opted into using the `bcrypt` libary to take care of the hashing.
+
+`bcrypt` can implement both salting and hashing, which for reasons listed above is quite helpful. `bcrypt` asyncrhonously generates hashes, which makes it more resistant to timing-based attacks. `bcrypt` also compares hashes to plaintext passwords without decrypting anything, so nowhere along the way is the user's data exposed.
 
 **AWS setup:**
 This application stores data on the AWS S3 database. The server gains access to the bucket through IAM credentials. This means that the server does not have root access to the database and if the credentials are leaked, then they can be wiped and regenerated. Note that the credentials are stored in a tertiary file, not the actual server code. This prevents their leakage as well.
