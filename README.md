@@ -35,5 +35,8 @@ There are many nuances to a hashing algorithm, and I do not expect to be able to
 **AWS setup:**
 This application stores data on the AWS S3 database. The server gains access to the bucket through IAM credentials. This means that the server does not have root access to the database and if the credentials are leaked, then they can be wiped and regenerated. Note that the credentials are stored in a tertiary file, not the actual server code. This prevents their leakage as well.
 
+**Cookies**
+A cookie is placed on the user's broswer so the server can tell when a user has logged in. The cookie expires after a certain amount of time, which then requires the user to sign-in again. This maintains security from the front-end.
+
 ## Further Details
 The server is built using an `express.js` framework, which connects to an AWS S3 database, where all user data is stored. `bcrypt` is used as the salting and hashing algorithm. The front-end is built from the ground up using HTML, CSS, and javascript (including JQuery and JQuery Validation libraries). 
