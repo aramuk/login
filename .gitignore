@@ -2,3 +2,5 @@ scratch/data/
 
 scratch/aws-config.json
 scratch/salts.json
+scratch/package-lock.json
+scratch/node_modules
