@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var fs = require('fs');
 
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 const saltRounds = 12;
 const usersalt = JSON.parse(fs.readFileSync('./salts.json', 'utf8')).usersalt;//Load salt for usernames from external file
 
@@ -23,7 +23,11 @@ var s3bucket = new AWS.S3({params:{Bucket:'demo-account-db'}});
 var app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
-app.use(session());
+app.use(session({
+    secret: 'login',
+    resave: false,
+    saveUninitialized: true,
+}));
 
 //Go to home page
 app.get('/', function(req, res){
