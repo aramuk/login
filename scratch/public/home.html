@@ -7,6 +7,7 @@
         <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
         <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
         <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script><!--FOR JSX-->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     </head>
     <body>
         <div class="menu-bar">
@@ -18,6 +19,40 @@
         </div>
         <div id='content' class='content'></div>
         <script type='text/babel'>
+
+        class UserData extends React.Component{
+            state = {
+                first: '',
+                last: '',
+                dob: ''
+            }
+
+            componentDidMount() {
+                axios.get('http://localhost:8000/loadData').then(res => {
+                    const info = res.data;
+                    this.setState({
+                        first: info.fname,
+                        last: info.lname,
+                        dob: info.bday
+                    });
+                });
+            };
+
+            render() {
+                return (
+                    <div>
+                        <p>Welcome {this.state.first} {this.state.last}!</p>
+                        <p>Born: {this.state.dob}</p>
+                    </div>
+                );
+            };
+        };
+
+        ReactDOM.render(
+            <UserData />,
+            document.getElementById('content')
+        );
+
             $(window).on('load', function(){
                 $.get('/loadData', function(data){
                     if(data.fname == null){
