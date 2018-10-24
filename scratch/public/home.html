@@ -14,13 +14,9 @@
                 <div id="site-title">aramuk/login</div>
             </a>
             <div id='uname' class='log redirect' style='width: 120px;'></div>
-            <div class='dropdown'>
-                <div class='portrait'></div>
-                <a id='edit' class='redirect p-nav'>Edit Profile</a>
-                <a class='redirect p-nav' href='/logout'>Log Out</a>
-            </div>
+            <div class='dropdown'></div>
         </div>
-        <div class='content'></div>
+        <div id='content' class='content'></div>
         <script type='text/babel'>
             $(window).on('load', function(){
                 $.get('/loadData', function(data){
@@ -30,14 +26,22 @@
                             lname: "Account"
                         }
                     }
-                    // var f = data.fname;
-                    // var l = data.lname
-                    // var element = <p>Hello, {f} {l}</p>
-                    // ReactDOM.render(
-                    //     element,
-                    //     document.getElementsByClassName('content')
-                    // );
-                    $('.portrait').append(data.fname[0]);
+
+                    function DropdownContent(){
+                        return (
+                            <span>
+                                <div class='portrait'>{data.fname[0]}</div>
+                                <a id='edit' class='redirect p-nav'>Edit Profile</a>
+                                <a class='redirect p-nav' href='/logout'>Log Out</a>
+                            </span>
+                        );
+                    };
+
+                    ReactDOM.render(
+                        DropdownContent(),
+                        document.getElementsByClassName('dropdown')[0]
+                    )
+
                     $('#uname').append(data.fname + ' ' + data.lname);
                     $('#uname').css({'font-size':'16px', });
                 });
