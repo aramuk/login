@@ -37,13 +37,21 @@
                         );
                     };
 
+                    function Name(){
+                        return (
+                            <span>{data.fname} {data.lname}</span>   
+                        );
+                    };
+
                     ReactDOM.render(
                         DropdownContent(),
                         document.getElementsByClassName('dropdown')[0]
                     )
 
-                    $('#uname').append(data.fname + ' ' + data.lname);
-                    $('#uname').css({'font-size':'16px', });
+                    ReactDOM.render(
+                        Name(),
+                        document.getElementById('uname')
+                    );
                 });
             });
 
