@@ -8,89 +8,88 @@
         <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
         <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script><!--FOR JSX-->
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script type='text/babel' src="index.js"></script>
     </head>
     <body>
-        <div class="menu-bar">
-            <a href="/">
+        <div class='menu-bar'>
+            <!-- <a href='/'>
                 <div id="site-title">aramuk/login</div>
             </a>
             <div id='uname' class='log redirect' style='width: 120px;'></div>
-            <div class='dropdown'></div>
+            <div class='dropdown'></div> -->
         </div>
         <div id='content' class='content'></div>
         <script type='text/babel'>
+    
+            class UserData extends React.Component{
+                state = {
+                    first: '',
+                    last: '',
+                    dob: ''
+                }
 
-        class UserData extends React.Component{
-            state = {
-                first: '',
-                last: '',
-                dob: ''
-            }
-
-            componentDidMount() {
-                axios.get('http://localhost:8000/loadData').then(res => {
-                    const info = res.data;
-                    this.setState({
-                        first: info.fname,
-                        last: info.lname,
-                        dob: info.bday
+                componentDidMount() {
+                    axios.get('http://localhost:8000/loadData').then(res => {
+                        const info = res.data;
+                        this.setState({
+                            first: info.fname,
+                            last: info.lname,
+                            dob: info.bday
+                        });
                     });
-                });
-            };
+                };
 
-            render() {
-                return (
-                    <div>
-                        <p>Welcome {this.state.first} {this.state.last}!</p>
-                        <p>Born: {this.state.dob}</p>
-                    </div>
-                );
-            };
-        };
-
-        ReactDOM.render(
-            <UserData />,
-            document.getElementById('content')
-        );
-
-            $(window).on('load', function(){
-                $.get('/loadData', function(data){
-                    if(data.fname == null){
-                        data = {
-                            fname: "Your",
-                            lname: "Account"
-                        }
-                    }
-
-                    function DropdownContent(){
-                        return (
-                            <span>
-                                <div class='portrait'>{data.fname[0]}</div>
-                                <a id='edit' class='redirect p-nav'>Edit Profile</a>
-                                <a class='redirect p-nav' href='/logout'>Log Out</a>
-                            </span>
-                        );
-                    };
-
-                    function Name(){
-                        return (
-                            <span>{data.fname} {data.lname}</span>   
-                        );
-                    };
-
-                    ReactDOM.render(
-                        DropdownContent(),
-                        document.getElementsByClassName('dropdown')[0]
-                    )
-
-                    ReactDOM.render(
-                        Name(),
-                        document.getElementById('uname')
+                render() {
+                    return (
+                        <div>
+                            <p>Welcome {this.state.first} {this.state.last}!</p>
+                            <p>Born: {this.state.dob}</p>
+                        </div>
                     );
-                });
-            });
+                };
+            };
 
-            $('#uname').click(function(){
+            ReactDOM.render(
+                <UserData />,
+                document.getElementById('content')
+            );
+
+            loadHomePage();
+            // $.get('/loadData', function(data){
+            //     if(data.fname == null){
+            //         data = {
+            //             fname: "Your",
+            //             lname: "Account"
+            //         }
+            //     }
+
+            //     function DropdownContent(){
+            //         return ([
+            //             <div class='portrait'>{data.fname[0]}</div>,
+            //             <a id='edit' class='redirect p-nav'>Edit Profile</a>,
+            //             <a class='redirect p-nav' href='/logout'>Log Out</a>
+            //         ]);
+
+            //     };
+
+            //     function Name(){
+            //         return (
+            //             <span>{data.fname} {data.lname}</span>   
+            //         );
+            //     };
+
+            //     ReactDOM.render(
+            //         DropdownContent(),
+            //         document.getElementsByClassName('dropdown')[0]
+            //     )
+
+            //     ReactDOM.render(
+            //         Name(),
+            //         document.getElementById('uname')
+            //     );
+            // });
+
+            $('#chip').click(function(){
                 if($('.dropdown').is(':visible')){
                     $('.dropdown').css({'display':'none'});
                 }

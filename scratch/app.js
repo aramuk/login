@@ -12,7 +12,7 @@ const usersalt = JSON.parse(fs.readFileSync('./salts.json', 'utf8')).usersalt;//
 
 const uuid = require('uuid/v4');
 
-const SESSION_LENGTH = 5 * 60 * 1000;//minutes * seconds * milliseconds
+const SESSION_LENGTH = 20 * 60 * 1000;//minutes * seconds * milliseconds
 const EXP_DATE = new Date(new Date().getTime() + SESSION_LENGTH); //5 minute session. change for actual use
 
 //AWS set up. 
@@ -43,6 +43,14 @@ app.get('/', function(req, res){
         console.log("Welcome New User!");
         res.sendFile(path.join(__dirname + '/public/index.html'));
     }
+});
+
+app.get('/test', function(req, res){
+    res.sendFile(path.join(__dirname + '/public/test.html'));
+});
+
+app.get('/index.js', function(req, res){
+    res.sendFile(path.join(__dirname + '/public/index.js'));
 });
 
 //Return stylesheets to front-end
