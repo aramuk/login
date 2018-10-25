@@ -15,47 +15,6 @@
         <div id='content' class='content'></div>
         <script type='text/babel'>
             loadHomePage();
-            // class UserData extends React.Component{
-            //     state = {
-            //         first: '',
-            //         last: '',
-            //         dob: ''
-            //     }
-
-            //     componentDidMount() {
-            //         axios.get('http://localhost:8000/loadData').then(res => {
-            //             const info = res.data;
-            //             this.setState({
-            //                 first: info.fname,
-            //                 last: info.lname,
-            //                 dob: info.bday
-            //             });
-            //         });
-            //     };
-
-            //     render() {
-            //         return (
-            //             <div>
-            //                 <p>Welcome {this.state.first} {this.state.last}!</p>
-            //                 <p>Born: {this.state.dob}</p>
-            //             </div>
-            //         );
-            //     };
-            // };
-
-            // ReactDOM.render(
-            //     <UserData />,
-            //     document.getElementById('content')
-            // );
-
-            $('#chip').click(function(){
-                if($('.dropdown').is(':visible')){
-                    $('.dropdown').css({'display':'none'});
-                }
-                else{
-                    $('.dropdown').css({'display':'block'});
-                }
-            });
 
             $('#edit').click(function(){
                 $.get('/editaccount', function(data){
@@ -81,7 +40,6 @@
 
             $('#submit').click(function(){
                 $('#editAccount').submit();
-                console.log('HI');
             });
         </script>
     </body>
