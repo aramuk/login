@@ -59,7 +59,7 @@ class Edit extends React.Component{
         axios.get('/editAccount').then(res => {
             const editForm = res.data;
             ReactDOM.render(
-                <div dangerouslySetInnerHTML={{__html: editForm}}></div>,
+                <EditForm/>,
                 document.getElementsByClassName('content')[0]
             );
             // $('#fname').val(data.fname);
@@ -74,6 +74,27 @@ class Edit extends React.Component{
         );
     };  
 }
+
+class EditForm extends React.Component{
+    render(){
+        return(
+            <div class='form'>
+                <form id='editAccount' action='/update' method='post'>
+                    <br/>
+                    <br/>
+                    <label for='fname'>First Name</label>
+                    <br/><input id='fname' name='fname'/>
+                    <br/><label for='lname'>Last Name</label>
+                    <br/><input id='lname' name='lname'/>
+                    <br/><label for='bday'>Birthday</label>
+                    <br/><input id='bday' name='bday'/>
+                    <br/><input type='submit' class='redirect' value='Update'/>
+                    <br/>
+                </form>
+            </div>
+        );
+    };
+};
 
 function loadHomePage(){
     axios.get('/loadData').then(res => {
