@@ -15,29 +15,6 @@
         <div id='content' class='content'></div>
         <script type='text/babel'>
             loadHomePage();
-
-            $('#edit').click(function(){
-                $.get('/editaccount', function(data){
-                    $('.content').append(data);
-                    $('.dropdown').css({'display':'none'});
-                    $.get('/loadData', function(data){
-                        if(data.fname == null){
-                            data = {
-                                fname: "Your",
-                                lname: "Account",
-                                
-                            }
-                        }
-                        if(data.bday == null){
-                            data.bday = "00/00/0000"
-                        }
-                        $('#fname').val(data.fname);
-                        $('#lname').val(data.lname);
-                        $('#bday').val(data.bday);
-                    });
-                });
-            });
-
             $('#submit').click(function(){
                 $('#editAccount').submit();
             });
