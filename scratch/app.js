@@ -82,17 +82,6 @@ app.get('/signup', function(req, res){
     res.sendFile(path.join(__dirname + '/public/create_account.html'));
 });
 
-//Page where user can edit password, and data
-app.get('/editaccount', function(req, res){
-    fs.readFile('./public/edit-form.json', function(err, data){
-        if(err){
-            console.log("Error reading edit-form.json: ", err);
-            res.status(500).send("Could not get permission to edit data");
-        }
-        res.json(JSON.parse(data).body);
-    })
-});
-
 //Check account availability before account creation
 app.get('/checkAvailability', function(req, res){
     encrypt(req.query.username + '.json', usersalt).then(function(hash){

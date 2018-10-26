@@ -80,16 +80,13 @@ class EditForm extends React.Component{
         return(
             <div class='form'>
                 <form id='editAccount' action='/update' method='post'>
-                    <br/>
-                    <br/>
                     <label for='fname'>First Name</label>
-                    <br/><input id='fname' name='fname'/>
-                    <br/><label for='lname'>Last Name</label>
-                    <br/><input id='lname' name='lname'/>
-                    <br/><label for='bday'>Birthday</label>
-                    <br/><input id='bday' name='bday'/>
-                    <br/><input type='submit' class='redirect' value='Update'/>
-                    <br/>
+                    <input id='fname' name='fname'/>
+                    <br/><br/><label for='lname'>Last Name</label>
+                    <input id='lname' name='lname'/>
+                    <br/><br/><label for='bday'>Birthday</label>
+                    <input id='bday' name='bday'/>
+                    <br/><br/><input type='submit' class='redirect' value='Update'/>
                 </form>
             </div>
         );
