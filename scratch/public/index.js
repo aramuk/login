@@ -2,11 +2,17 @@ const SITE_TITLE = 'aramuk/login'
 
 class MenuBar extends React.Component{
     render(){
+        if(this.props.loggedIn){
+            return([
+                <a href='/'><div id='site-title'>{this.props.title}</div></a>,
+                <AccountChip first={this.props.first} last={this.props.last}/>,
+                <Dropdown first={this.props.first}/>
+            ]);
+        }
         return([
             <a href='/'><div id='site-title'>{this.props.title}</div></a>,
-            <AccountChip first={this.props.first} last={this.props.last}/>,
-            <Dropdown first={this.props.first}/>
-        ]);
+            <a href="/login"><div class="log redirect">Sign In</div></a>
+        ])
     };
 };
 
@@ -93,19 +99,24 @@ class EditForm extends React.Component{
     };
 };
 
-function loadHomePage(){
-    axios.get('/loadData').then(res => {
-        loadMenu(res.data);
-        loadData(res.data);
-    });
-
+function loadHomePage(loggedIn){
+    if(loggedIn){
+        axios.get('/loadData').then(res => {
+            loadMenu(true, res.data);
+            loadData(res.data);
+        });
+    }
+    else{
+        loadMenu(false)
+    }
 }
 
-function loadMenu(data){
+
+function loadMenu(loggedIn, data={}){
     ReactDOM.render(
-        <MenuBar title={SITE_TITLE} first={data.fname} last={data.lname}/>,
+        <MenuBar loggedIn={loggedIn} title={SITE_TITLE} first={data.fname} last={data.lname}/>,
         document.getElementsByClassName('menu-bar')[0]
-    );
+    );   
 };
 
 function loadData(data){
