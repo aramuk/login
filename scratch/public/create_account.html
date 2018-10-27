@@ -5,14 +5,15 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>    
         <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
         <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+        <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script><!--FOR JSX-->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="index.js" type='text/babel' ></script>
     </head>
     <header></header>
     <body>
-        <div class="menu-bar">
-            <a href="/">
-                <div id="site-title">aramuk/login</div>
-            </a>
-        </div>
+        <div class="menu-bar"></div>
         <div class="form">
             <h3>Create an Account</h3>
             <form id='check'>
@@ -152,6 +153,9 @@
                     $('li[name="special"]').css({'color':'black'});
                 }
             })
+        </script>
+        <script type='text/babel'>
+            loadHomePage(false)
         </script>
     </body>
 </html>
