@@ -38,7 +38,12 @@ This application stores data on the AWS S3 database. The server gains access to 
 **Cookies**
 A cookie is placed on the user's broswer so the server can tell when a user has logged in. The cookie expires after a certain amount of time, which then requires the user to sign-in again. This maintains security from the front-end.
 
-The data stored in the cookie is simpy a link to a session in the database. Each session deletes itself after a short amount of time and contains credentials to access the root account. This keeps the root credentials from being sent back and forth from any client to the server, thereby increasing security.
+The data stored in the cookie is only a link to a session in the database. Each session deletes itself after a short amount of time and contains credentials to access the root account. This keeps the root credentials from being sent back and forth from any client to the server, thereby increasing security.
+
+**Future Implementation**
+- Switch cookies to javascript sessions
+- Create a password reset feature
+- Fix login issues
 
 ## Further Details
 The server is built using the `express.js` framework. The server connects to an AWS S3 database, to post and get user data. `bcrypt` is used as the salting and hashing algorithm. The front-end is built from the ground up using HTML, CSS, and javascript (including React.js JQuery and JQuery Validation libraries). 
