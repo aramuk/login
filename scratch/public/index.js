@@ -1,5 +1,6 @@
 const SITE_TITLE = 'aramuk/login'
 
+//The site title and login button/account chip
 class MenuBar extends React.Component{
     render(){
         if(this.props.loggedIn){
@@ -16,6 +17,7 @@ class MenuBar extends React.Component{
     };
 };
 
+//The Account Chip
 class AccountChip extends React.Component{
 
     handleClick(){
@@ -36,6 +38,7 @@ class AccountChip extends React.Component{
     };
 };
 
+//Dropdown menu to logout/edit account
 class Dropdown extends React.Component{
     render(){
         return(
@@ -48,6 +51,7 @@ class Dropdown extends React.Component{
     };
 };
 
+//User data to be appended to the page; temporary
 class UserData extends React.Component{
     render() {
         return (
@@ -59,6 +63,7 @@ class UserData extends React.Component{
     };
 };
 
+//The Edit button and code to render edit form on click
 class Edit extends React.Component{
     handleClick(){
         $('#chip').click();
@@ -81,6 +86,7 @@ class Edit extends React.Component{
     };  
 }
 
+//The account data editing form
 class EditForm extends React.Component{
     render(){
         return(
@@ -99,6 +105,7 @@ class EditForm extends React.Component{
     };
 };
 
+//load the components of the home page.
 function loadHomePage(loggedIn){
     if(loggedIn){
         axios.get('/loadData').then(res => {
@@ -111,7 +118,7 @@ function loadHomePage(loggedIn){
     }
 }
 
-
+//Load the components of the menubar
 function loadMenu(loggedIn, data={}){
     ReactDOM.render(
         <MenuBar loggedIn={loggedIn} title={SITE_TITLE} first={data.fname} last={data.lname}/>,
@@ -119,6 +126,7 @@ function loadMenu(loggedIn, data={}){
     );   
 };
 
+//load data on the page
 function loadData(data){
     ReactDOM.render(
         <UserData first={data.fname} last={data.lname} dob={data.bday}/>,
